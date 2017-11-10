@@ -1,0 +1,12 @@
+name: comboUp
+title: comboUp
+username:
+account: xiegu
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 233835
+bundleId: 1068436
+url: https://xiegu.shinyapps.io/comboUp/
+when: 1510298315.73389
+asMultiple: FALSE
+asStatic: FALSE
