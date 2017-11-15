@@ -37,6 +37,10 @@ hood_tag <- hot_tag('hood')
 dish_tag <- hot_tag('dish')
 gas_tag <- hot_tag('gas')
 
+floor_air_tag <- c('立式','圆柱','柜式', '立柜')
+
+air_tag <- filter(air_tag, !tag %in%floor_air_tag)
+
 ref_hot_tag <- head(ref_tag, 20)
 air_hot_tag <- head(air_tag, 40)
 wash_hot_tag <- head(wash_tag, 20)
@@ -50,5 +54,5 @@ gas_hot_tag <- head(gas_tag, 20)
 #range <- 0.1 # +-10%
 
 #air_no <- layout$living + layout$room #max
-sub_brand <- c('统帅', '卡萨帝')
+sub_brand <- c('卡萨帝')
 categories <- unique(haier_data$category)
