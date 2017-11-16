@@ -3,7 +3,6 @@ library(shiny)
 library(DT)
 library(shinythemes)
 library(scales)
-library(markdown)
 
 # Load demo data
 load('data.RData')
@@ -18,8 +17,7 @@ ui <- navbarPage('comboUP', position = 'fixed-top',
                  
                  tabPanel('Tool',
                           tags$head(
-                            includeCSS('www/style.css'),
-                            includeCSS('www/hover.css')
+                            includeCSS('www/style.css')
                           ),
                         
                           fluidRow(
@@ -42,34 +40,22 @@ ui <- navbarPage('comboUP', position = 'fixed-top',
                                    )
                                    
                             ),
-                            column(width = 3,
-                                   
+                            column(width = 2,
                                    wellPanel(style = 'background:#dddddd;',
                                              uiOutput('tagPicker')
-                                   ),
-                                   actionButton("Submit" ,'Submit', class = 'btn-primary', icon = icon('upload'), width = '49%'),
-                                   actionButton('Reset', 'Reset', class = 'btn-info', icon = icon('refresh'),width = '49%'),
-                                   br()
+                                   )
                             
                             ),
                             column(width = 6, 
-                                   tabsetPanel(
-                                   tabPanel(h1('Hot sales'),
-                                            br(),
-                                   actionButton('sale1', 'Combo 1', class = 'hvr-fade-1'),
-                                   actionButton('sale2', 'Combo 2', class = 'hvr-fade-2'),
-                                   actionButton('sale3', 'Combo 3', class = 'hvr-fade-3'),
-                                   uiOutput('ComboOutput1')
-                                   ),
-                                   tabPanel(h1('Customer favorites'),
-                                            br(),
-                                   actionButton('favor1', 'Combo 1', class = 'hvr-fade-1'),
-                                   actionButton('favor2', 'Combo 2', class = 'hvr-fade-2'),
-                                   actionButton('favor3', 'Combo 3', class = 'hvr-fade-3'),
+                                   actionButton("Submit" ,'Submit', class = 'btn-primary', icon = icon('upload'), width = '25%'),
+                                   actionButton('Reset', 'Reset', class = 'btn-info', icon = icon('refresh'),width = '25%'),
+                                   h1('Hot sales'),
+                                   uiOutput('ComboOutput1'),
+                                   br(),
+                                   h1('Customer favorites'),
                                    uiOutput('ComboOutput2'),
                                    br()
-                                   )
-                                   )
+                                   
                                    
                             )
                             
@@ -184,9 +170,8 @@ server <- function(input, output, session){
     input$DishTag
   })
   
-  w <- reactiveValues(ui = NULL)
-  
-  saletable <- reactive({
+  output$ComboOutput1 <- renderUI({
+    
     if(is.null(reset$data)){
       return(NULL)
     }
@@ -255,38 +240,16 @@ server <- function(input, output, session){
       combo_result3 <- comboModelerNext(categories, tableSelector2, l2, room, floor, budget, range)
     }
     table3 <- combo_result3$table
-    ui <- list(combo1 = table1, combo2 = table2, combo3 = table3)
-    return(ui)
-  })
+    ui <- list(combo1 = datatable(table1, caption = tags$caption(style = 'color: black', h2(style = 'text-align: right;', 'Combo 1'), h2(style = 'text-align: right;', paste('Price', prettyNum(sum(table1$total), big.mark = ','), sep = ': '))), options = list(dom = 't')),
+             combo2 = datatable(table2, caption = tags$caption(style = 'color: black', h2(style = 'text-align: right;', 'Combo 2'), h2(style = 'text-align: right;', paste('Price', prettyNum(sum(table2$total), big.mark = ','), sep = ': '))), options = list(dom = 't')),
+           combo3 = datatable(table3, caption = tags$caption(style = 'color: black', h2(style = 'text-align: right;', 'Combo 3'), h2(style = 'text-align: right;', paste('Price', prettyNum(sum(table3$total), big.mark = ','), sep = ': '))), options = list(dom = 't'))
+           )
+    #ui <- list(combo1 = datatable(do.call(rbind, tableSelector2)))
+    tagList(ui[c('combo1', 'combo2', 'combo3')])
+    })
   
-  observeEvent((input$sale1),{
-    w$ui <- saletable()[['combo1']]
-  })
-  
-  observeEvent(input$sale2,{
-    w$ui <- saletable()[['combo2']]
-  })
-  
-  observeEvent(input$sale3,{
-    w$ui <- saletable()[['combo3']]
-  })
-  
-  output$ComboOutput1 <- renderUI({
-    if(is.null(reset$data)){
-      return(NULL)
-    }
-    if (is.null(w$ui)) return()
-    tagList(
-      datatable(w$ui, rownames = FALSE,  caption = tags$caption(style = 'color: black', h2(style = 'text-align: right;', paste('Price', prettyNum(sum(w$ui$total), big.mark = ','), sep = ': '))), options = list(buttons = c('copy', 'csv'), dom = 't'))
-    )
-  })
-  
-  
-  
-  v <- reactiveValues(ui = NULL)
-  
-  
-  favtable <- reactive({
+  output$ComboOutput2 <- renderUI({
+    
     if(is.null(reset$data)){
       return(NULL)
     }
@@ -355,29 +318,12 @@ server <- function(input, output, session){
       combo_result3 <- comboModelerNext(categories, tableSelector2, l2, room, floor, budget, range)
     }
     table3 <- combo_result3$table
-    ui <- list(combo1 = table1, combo2 = table2, combo3 = table3)
-    return(ui)
-  })
-  observeEvent(input$favor1,{
-    v$ui <- favtable()[['combo1']]
-  })
-  
-  observeEvent(input$favor2,{
-    v$ui <- favtable()[['combo2']]
-  })
-  
-  observeEvent(input$favor3,{
-    v$ui <- favtable()[['combo3']]
-  })
-  
-  output$ComboOutput2 <- renderUI({
-    if(is.null(reset$data)){
-      return(NULL)
-    }
-    if (is.null(v$ui)) return()
-    tagList(
-    datatable(v$ui, rownames = FALSE, caption = tags$caption(style = 'color: black', h2(style = 'text-align: right;', paste('Price', prettyNum(sum(v$ui$total), big.mark = ','), sep = ': '))), options = list(dom = 't', buttons = c('copy', 'csv')))
+    ui <- list(combo1 = datatable(table1, caption = tags$caption(style = 'color: black', h2(style = 'text-align: right;', 'Combo 1'), h2(style = 'text-align: right;', paste('Price', prettyNum(sum(table1$total), big.mark = ','), sep = ': '))), options = list(dom = 't')),
+               combo2 = datatable(table2, caption = tags$caption(style = 'color: black', h2(style = 'text-align: right;', 'Combo 2'), h2(style = 'text-align: right;', paste('Price', prettyNum(sum(table2$total), big.mark = ','), sep = ': '))), options = list(dom = 't')),
+               combo3 = datatable(table3, caption = tags$caption(style = 'color: black', h2(style = 'text-align: right;', 'Combo 3'), h2(style = 'text-align: right;', paste('Price', prettyNum(sum(table3$total), big.mark = ','), sep = ': '))), options = list(dom = 't'))
     )
+    #ui <- list(combo1 = datatable(do.call(rbind, tableSelector2)))
+    tagList(ui[c('combo1', 'combo2', 'combo3')])
   })
   
  

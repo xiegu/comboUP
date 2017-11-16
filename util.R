@@ -7,22 +7,22 @@ multiAndGrep <- function(patterns, x){
     y <- grepl(i, x)
     n <- n + y
   }
-  if(n > 0 & n == length(patterns)){
-    return(1)
+if(n > 0){
+    return(n)
   }else(return(0))
 }
 
 tableFilter <- function(cat = 'ref', preference, brand, tag, no_floor = 1, no_room = 2){
   if(cat == 'air'){
     if(no_floor ==0){
-      haier_data <- filter(haier_data, !grepl(paste(floor_air_tag, collapse = '|'), name) & category == cat)
+      haier_data <- filter
     }else if (no_floor == no_room){
       haier_data <- filter(haier_data, grepl(paste(floor_air_tag, collapse = '|'), name) & category == cat)
     }else{
       haier_data_floor <- filter(haier_data, grepl(paste(floor_air_tag, collapse = '|'), name) & category == cat) %>% 
-        mutate(match = sapply(name, function(x) multiAndGrep(tag, x))) %>% filter(match == 1) %>% select(-match)
+        mutate(match = sapply(name, function(x) multiAndGrep(tag, x))) %>% filter(match == max(match)) #%>% select(-match)
       haier_data_wall <- filter(haier_data, (!grepl(paste(floor_air_tag, collapse = '|'), name)) & (category == cat)) %>% 
-        mutate(match = sapply(name, function(x) multiAndGrep(tag, x))) %>% filter(match == 1) %>% select(-match)
+        mutate(match = sapply(name, function(x) multiAndGrep(tag, x))) %>% filter(match == max(match)) #%>% select(-match)
       if(preference == 'sale'){
         haier_data_floor <- arrange(haier_data_floor, -comment_count)
         haier_data_wall <- arrange(haier_data_wall, -comment_count)
@@ -50,15 +50,15 @@ tableFilter <- function(cat = 'ref', preference, brand, tag, no_floor = 1, no_ro
       }else{
         haier_data_wall <- haier_data_wall2
       }
-      haier_data_floor <- select(haier_data_floor, name, p) %>% rename(price = p)
-      haier_data_wall <- select(haier_data_wall, name, p) %>% rename(price = p)
+      haier_data_floor <- select(haier_data_floor, name, p, match) %>% rename(price = p)
+      haier_data_wall <- select(haier_data_wall, name, p, match) %>% rename(price = p)
       haier_data <- list(floor = haier_data_floor, wall = haier_data_wall)
       return(haier_data)
     }
   }else{
     haier_data <- haier_data
   }
-  dt <- filter(haier_data, category == cat) %>% mutate(match = sapply(name, function(x) multiAndGrep(tag, x))) %>% filter(match == 1) %>% select(-match)
+  dt <- filter(haier_data, category == cat) %>% mutate(match = sapply(name, function(x) multiAndGrep(tag, x))) %>% filter(match == max(match)) #%>% select(-match)
   if(preference == 'sale'){
     dt <- arrange(dt, -comment_count)
   }else if(preference == 'like'){
@@ -74,7 +74,7 @@ tableFilter <- function(cat = 'ref', preference, brand, tag, no_floor = 1, no_ro
   }else{
     dt <- dt2
   }
-  dt <- select(dt, name, p) %>% rename(price = p)
+  dt <- select(dt, name, p, match) %>% rename(price = p)
   return(dt)
 }
 
