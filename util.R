@@ -15,20 +15,20 @@ if(n > 0){
 tableFilter <- function(cat = 'ref', preference, brand, tag, no_floor = 1, no_room = 2){
   if(cat == 'air'){
     if(no_floor ==0){
-      haier_data <- filter
+      haier_data <- filter(haier_data, (!grepl(paste(floor_air_tag, collapse = '|'), name)) & category == cat)
     }else if (no_floor == no_room){
       haier_data <- filter(haier_data, grepl(paste(floor_air_tag, collapse = '|'), name) & category == cat)
     }else{
       haier_data_floor <- filter(haier_data, grepl(paste(floor_air_tag, collapse = '|'), name) & category == cat) %>% 
-        mutate(match = sapply(name, function(x) multiAndGrep(tag, x))) %>% filter(match == max(match)) #%>% select(-match)
+        mutate(match = sapply(name, function(x) multiAndGrep(tag, x))/length(tag)) %>% filter(match > 0) #%>% select(-match)
       haier_data_wall <- filter(haier_data, (!grepl(paste(floor_air_tag, collapse = '|'), name)) & (category == cat)) %>% 
-        mutate(match = sapply(name, function(x) multiAndGrep(tag, x))) %>% filter(match == max(match)) #%>% select(-match)
+        mutate(match = sapply(name, function(x) multiAndGrep(tag, x))/length(tag)) %>% filter(match > 0) #%>% select(-match)
       if(preference == 'sale'){
-        haier_data_floor <- arrange(haier_data_floor, -comment_count)
-        haier_data_wall <- arrange(haier_data_wall, -comment_count)
+        haier_data_floor <- arrange(haier_data_floor, -match, -comment_count)
+        haier_data_wall <- arrange(haier_data_wall, -match, -comment_count)
       }else if(preference == 'like'){
-        haier_data_floor <- arrange(haier_data_floor, -score)
-        haier_data_wall <- arrange(haier_data_wall, -score)
+        haier_data_floor <- arrange(haier_data_floor, -match,  -score)
+        haier_data_wall <- arrange(haier_data_wall, -match, -score)
       }else{
         haier_data_floor <- haier_data_floor
         haier_data_wall <- haier_data_wall
@@ -58,11 +58,11 @@ tableFilter <- function(cat = 'ref', preference, brand, tag, no_floor = 1, no_ro
   }else{
     haier_data <- haier_data
   }
-  dt <- filter(haier_data, category == cat) %>% mutate(match = sapply(name, function(x) multiAndGrep(tag, x))) %>% filter(match == max(match)) #%>% select(-match)
+  dt <- filter(haier_data, category == cat) %>% mutate(match = sapply(name, function(x) multiAndGrep(tag, x))/length(tag)) %>% filter(match > 0) #%>% select(-match)
   if(preference == 'sale'){
-    dt <- arrange(dt, -comment_count)
+    dt <- arrange(dt, -match, -comment_count)
   }else if(preference == 'like'){
-    dt <- arrange(dt, -score)
+    dt <- arrange(dt, -match, -score)
   }else{dt <- dt}
   if(isTRUE(brand)){
     dt2 <- filter(dt, grepl(paste(sub_brand, collapse = '|'), name))
@@ -93,12 +93,12 @@ comboModeler <- function(categories, tableSelector, li, tablei, room, floor, b, 
     for(i in categories){
       indexi <- which(categories ==i)
       if(indexi>1){
-        n <- min(10, nrow(tableSelector[[indexi-1]]))# maximum 10 attempts only
+        n <- min(20, nrow(tableSelector[[indexi-1]])) # maximum 20 attempts only
         price2ndMax <- sort(head(tableSelector[[indexi-1]]$price, n), decreasing = TRUE)[2]
         indexP2ndMax <- which(head(tableSelector[[indexi-1]]$price, n) == price2ndMax)[1]
         l1[[indexi-1]] <- tableSelector[[indexi-1]][indexP2ndMax, ]
       }
-      n <- min(10, nrow(tableSelector[[indexi]]))# maximum 10 attempts only
+      n <- min(20, nrow(tableSelector[[indexi]])) # maximum 20 attempts only
       for(j in 2:n){
         product <-tableSelector[[i]][j, ]
         l1[[i]] <- product
@@ -172,12 +172,12 @@ comboModelerNext <- function(cat, tabSel, ls, ro, f, b, r){
     for(i in cat){
       indexi <- which(cat ==i)
       if(indexi>1){
-        n <- min(10, nrow(tabSel[[indexi-1]]))# maximum 10 attempts only
+        n <- min(20, nrow(tabSel[[indexi-1]]))# maximum 20 attempts only
         price2ndMax <- sort(head(tabSel[[indexi-1]]$price, n), decreasing = TRUE)[2]
         indexP2ndMax <- which(head(tabSel[[indexi-1]]$price, n) == price2ndMax)[1]
         l1[[indexi-1]] <- tabSel[[indexi-1]][indexP2ndMax, ]
       }
-      n <- min(10, nrow(tabSel[[indexi]]))# maximum 10 attempts only
+      n <- min(20, nrow(tabSel[[indexi]]))# maximum 20 attempts only
       for(j in 2:n){
         product <-tabSel[[i]][j, ]
         l1[[i]] <- product

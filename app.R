@@ -2,6 +2,7 @@ library(dplyr)
 library(shiny)
 library(DT)
 library(shinythemes)
+library(shinyjs)
 library(scales)
 library(markdown)
 
@@ -13,59 +14,77 @@ source('util.R', local = TRUE)
 
 #-----------------------------------------
 
-ui <- navbarPage('comboUP', position = 'fixed-top',
-                 theme = shinytheme("journal"),
+ui <- navbarPage('NICE', position = 'fixed-top',
+                 theme = shinytheme("flatly"),
                  
-                 tabPanel('Tool',
+                 tabPanel('套餐选择',
                           tags$head(
                             includeCSS('www/style.css'),
                             includeCSS('www/hover.css')
                           ),
                         
                           fluidRow(
-                            column(width = 2,
+                            column(width = 3,
+                                   
                                    wellPanel(
-                                     sliderInput('Bed', 'Bedroom', min = 1, max =4 , value = 2),
-                                     sliderInput('Living', 'Living room', min =1, max =4, value  = 1),
-                                     sliderInput('Budget', 'Budget', min = 20000, max = 100000, step = 5000, value = 20000),
-                                     sliderInput('Range', '+/-', min = 0.05, max = 0.2, step = 0.05, value = 0.1),
-                                     selectizeInput('Combo', 'Combo set', choices = c('洗衣机' = 'wash', 
+                                     sliderInput('Bed', '卧室', min = 1, max =4 , value = 2),
+                                     sliderInput('Living', '客厅', min =1, max =4, value  = 1),
+                                     sliderInput('Budget', '预算', min = 20000, max = 100000, step = 5000, value = 20000),
+                                     sliderInput('Range', '预算调整幅度+/-', min = 0.05, max = 0.2, step = 0.05, value = 0.1),
+                                     selectizeInput('Combo', '家电品类', choices = c('洗衣机' = 'wash', 
                                                                                       '空调' = 'air',
                                                                                       '冰箱' = 'ref', 
                                                                                       '洗碗机' = 'dish', 
                                                                                       '油烟机' = 'hood',
                                                                                       '燃气灶' = 'gas',
                                                                                       '电视' = 'tv'), selected = c('ref', 'air', 'wash', 'hood', 'gas'), multiple = TRUE,options = list(
-                                                                                        placeholder = 'Please select at least 2 categories')),
+                                                                                        placeholder = '请至少选择两个家电品类')),
                                      uiOutput('FloorAir'),
-                                     checkboxInput('Brand', 'Brand? (Casarte)', FALSE)
-                                   )
+                                     checkboxInput('品牌偏好', '卡萨帝', FALSE)
+                                   ),
+                                   actionButton("Submit" ,'提交', class = 'btn-primary', icon = icon('upload'), width = '49%'),
+                                   actionButton('Reset', '清除', class = 'btn-info', icon = icon('refresh'),width = '49%')
                                    
                             ),
                             column(width = 3,
-                                   
+                                   wellPanel(
+                                     sliderInput('People', '住户人数', min = 1, max = 10, value = 3),
+                                     checkboxInput('Old', '是否有老人', FALSE),
+                                     radioButtons('Child', '是否有小孩', choices = list('无' = '无', '3岁以下' = '3岁以下', '3岁以上'= '3岁以上'), FALSE),
+                                     textInput('Address', '地址', value = '', placeholder = '请填入住宅地址'),
+                                     checkboxInput('PM', '根据地址是否选择自清洁/净化pm2.5空调？', FALSE),
+                                     textInput('Phone', '联系电话', value = '', placeholder = '请填入联系电话')
+                                   ),
                                    wellPanel(style = 'background:#dddddd;',
                                              uiOutput('tagPicker')
-                                   ),
-                                   actionButton("Submit" ,'Submit', class = 'btn-primary', icon = icon('upload'), width = '49%'),
-                                   actionButton('Reset', 'Reset', class = 'btn-info', icon = icon('refresh'),width = '49%'),
-                                   br()
+                                   )
                             
                             ),
-                            column(width = 6, 
+                            column(width = 6,
+                                   
                                    tabsetPanel(
-                                   tabPanel(h1('Hot sales'),
-                                            br(),
-                                   actionButton('sale1', 'Combo 1', class = 'hvr-fade-1'),
-                                   actionButton('sale2', 'Combo 2', class = 'hvr-fade-2'),
-                                   actionButton('sale3', 'Combo 3', class = 'hvr-fade-3'),
+                                   tabPanel(h2('热卖产品'),
+                                   br(),
+                                   useShinyjs(),
+                                   actionButton('Logic', '套餐选择逻辑', class = 'btn-info'),
+                                   wellPanel(id = 'LogicPanel', style = 'background-color: white',
+                                             p('根据住房户型、用户预算和所需家电品类，初步筛选目标家电产品'),
+                                             p('根据用户输入基本信息，客制化精确筛选目标家电产品：'),
+                                             p('地址：', verbatimTextOutput('AddressOut')),
+                                             p('住户成员构成：', verbatimTextOutput('Member')),
+                                             p('联系电话：', verbatimTextOutput('PhoneOut'))
+                                   ),
+                                   actionButton('bought', '购买记录', class = 'btn-success'),
+                                   actionButton('sale1', '套餐一', class = 'hvr-fade-1'),
+                                   actionButton('sale2', '套餐二', class = 'hvr-fade-2'),
+                                   actionButton('sale3', '套餐三', class = 'hvr-fade-3'),
                                    uiOutput('ComboOutput1')
                                    ),
-                                   tabPanel(h1('Customer favorites'),
+                                   tabPanel(h2('用户最爱'),
                                             br(),
-                                   actionButton('favor1', 'Combo 1', class = 'hvr-fade-1'),
-                                   actionButton('favor2', 'Combo 2', class = 'hvr-fade-2'),
-                                   actionButton('favor3', 'Combo 3', class = 'hvr-fade-3'),
+                                   actionButton('favor1', '套餐一', class = 'hvr-fade-1'),
+                                   actionButton('favor2', '套餐二', class = 'hvr-fade-2'),
+                                   actionButton('favor3', '套餐三', class = 'hvr-fade-3'),
                                    uiOutput('ComboOutput2'),
                                    br()
                                    )
@@ -83,7 +102,7 @@ ui <- navbarPage('comboUP', position = 'fixed-top',
                           # )
                           )
                  ),
-                 tabPanel('About',
+                 tabPanel('关于我们',
                           tags$head(
                             includeCSS('www/style.css')
                           ),
@@ -94,6 +113,22 @@ ui <- navbarPage('comboUP', position = 'fixed-top',
 
 server <- function(input, output, session){
   
+  observeEvent(input$Logic == FALSE, {
+    # Change the following line for more examples
+    toggle("LogicPanel")
+  })
+  
+  output$AddressOut <- renderText({
+   paste(input$Address, ' 河北石家庄最近6个月平均污染指数(pm2.5): ', '严重', sep='')
+  })
+  
+  output$Member <- renderText({
+    paste('家中', ifelse(input$Old, '有', '无'), '老人，', ifelse(input$Child == '无', '无', '有'), input$Child,'小孩', sep ='', '，提高安全系数比重')
+  })
+  
+  output$PhoneOut <- renderText({
+    paste('用户', input$Phone, '购买过海尔家电产品', sep = '', '，根据购买记录匹配推荐产品优先级')
+  })
   reset <- reactiveValues(data = NULL)
   
   observeEvent(input$Submit, {
@@ -108,20 +143,20 @@ server <- function(input, output, session){
     if(!'air' %in% input$Combo){
       return()
     }else{
-      sliderInput('NoFloorAir', 'No of floor aircon', min = 0, max = input$Living + input$Bed, step = 1, value = input$Living)
+      sliderInput('NoFloorAir', '立式空调', min = 0, max = input$Living + input$Bed, step = 1, value = input$Living)
     }
   })
   
   
   output$tagPicker <- renderUI({
     ui <- list(
-      ref = selectizeInput('RefTag', 'Fridge tags', multiple = TRUE, choices = ref_hot_tag$tag, selected = head(ref_hot_tag$tag,2), options =list(maxItems = 5, placeholder = 'Please select at least 1 tag')),
-      air = selectizeInput('AirTag', 'Aircon tags', multiple = TRUE, choices = air_hot_tag$tag, selected = head(air_hot_tag$tag,2), options =list(maxItems = 5, placeholder = 'Please select at least 1 tag')),
-      wash= selectizeInput('WashTag', 'Wash tags', multiple = TRUE, choices = wash_hot_tag$tag, selected = head(wash_hot_tag$tag,2), options =list(maxItems = 5, placeholder = 'Please select at least 1 tag')),
-      tv = selectizeInput('TVTag', 'TV tags', multiple = TRUE, choices = tv_hot_tag$tag, selected = head(tv_hot_tag$tag,2), options =list(maxItems = 5, placeholder = 'Please select at least 1 tag')),
-      hood = selectizeInput('HoodTag', 'Hood tags', multiple = TRUE, choices = hood_hot_tag$tag, selected = head(hood_hot_tag$tag,2), options =list(maxItems = 5, placeholder = 'Please select at least 1 tag')),
-      gas = selectizeInput('GasTag', 'Gas tags', multiple = TRUE, choices = gas_hot_tag$tag, selected = head(gas_hot_tag$tag,2), options =list(maxItems = 5, placeholder = 'Please select at least 1 tag')),
-      dish = selectizeInput('DishTag', 'Dish tags', multiple = TRUE, choices = dish_hot_tag$tag, selected = head(dish_hot_tag$tag,2), options =list(maxItems = 5, placeholder = 'Please select at least 1 tag'))
+      ref = selectizeInput('RefTag', '冰箱标签', multiple = TRUE, choices = ref_hot_tag$tag, selected = head(ref_hot_tag$tag,2), options =list(create = TRUE, maxItems = 5, placeholder = 'Please select at least 1 tag')),
+      air = selectizeInput('AirTag', '空调标签', multiple = TRUE, choices = air_hot_tag$tag, selected = head(air_hot_tag$tag,2), options =list(create = TRUE, maxItems = 5, placeholder = 'Please select at least 1 tag')),
+      wash= selectizeInput('WashTag', '洗衣机标签', multiple = TRUE, choices = wash_hot_tag$tag, selected = head(wash_hot_tag$tag,2), options =list(create = TRUE, maxItems = 5, placeholder = 'Please select at least 1 tag')),
+      tv = selectizeInput('TVTag', '电视标签', multiple = TRUE, choices = tv_hot_tag$tag, selected = head(tv_hot_tag$tag,2), options =list(create = TRUE, maxItems = 5, placeholder = 'Please select at least 1 tag')),
+      hood = selectizeInput('HoodTag', '油烟机标签', multiple = TRUE, choices = hood_hot_tag$tag, selected = head(hood_hot_tag$tag,2), options =list(create = TRUE, maxItems = 5, placeholder = 'Please select at least 1 tag')),
+      gas = selectizeInput('GasTag', '燃气灶标签', multiple = TRUE, choices = gas_hot_tag$tag, selected = head(gas_hot_tag$tag,2), options =list(create = TRUE, maxItems = 5, placeholder = 'Please select at least 1 tag')),
+      dish = selectizeInput('DishTag', '洗碗机标签', multiple = TRUE, choices = dish_hot_tag$tag, selected = head(dish_hot_tag$tag,2), options =list(create = TRUE, maxItems = 5, placeholder = 'Please select at least 1 tag'))
       
     )
     tagList(ui[input$Combo]
@@ -277,7 +312,8 @@ server <- function(input, output, session){
     }
     if (is.null(w$ui)) return()
     tagList(
-      datatable(w$ui, rownames = FALSE,  caption = tags$caption(style = 'color: black', h2(style = 'text-align: right;', paste('Price', prettyNum(sum(w$ui$total), big.mark = ','), sep = ': '))), options = list(buttons = c('copy', 'csv'), dom = 't'))
+      datatable(w$ui, rownames = FALSE, colnames = c('产品名称', '价格', '匹配度', '品类', '总价'), caption = tags$caption(style = 'color: black', h2(style = 'text-align: right;', paste('Price', prettyNum(sum(w$ui$total), big.mark = ','), sep = ': '))), options = list(dom = 't'))%>%
+        formatPercentage('match', 1)
     )
   })
   
@@ -376,7 +412,8 @@ server <- function(input, output, session){
     }
     if (is.null(v$ui)) return()
     tagList(
-    datatable(v$ui, rownames = FALSE, caption = tags$caption(style = 'color: black', h2(style = 'text-align: right;', paste('Price', prettyNum(sum(v$ui$total), big.mark = ','), sep = ': '))), options = list(dom = 't', buttons = c('copy', 'csv')))
+    datatable(v$ui, rownames = FALSE, colnames = c('产品名称', '价格', '匹配度', '品类', '总价'), caption = tags$caption(style = 'color: black', h2(style = 'text-align: right;', paste('Price', prettyNum(sum(v$ui$total), big.mark = ','), sep = ': '))), options = list(dom = 't'))%>%
+      formatPercentage('match',1)
     )
   })
   
