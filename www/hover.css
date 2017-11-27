@@ -1190,7 +1190,7 @@
   .hvr-fade-1 {
     display: inline-block;
     vertical-align: middle;
-    background-color:#33363b;
+    background-color:#3072cb;
     -webkit-transform: perspective(1px) translateZ(0);
     transform: perspective(1px) translateZ(0);
     box-shadow: 0 0 1px transparent;
@@ -1209,7 +1209,7 @@
   .hvr-fade-2 {
     display: inline-block;
     vertical-align: middle;
-    background-color:#433f45;
+    background-color:#4a709f;
     -webkit-transform: perspective(1px) translateZ(0);
     transform: perspective(1px) translateZ(0);
     box-shadow: 0 0 1px transparent;
@@ -1228,7 +1228,7 @@
   .hvr-fade-3 {
     display: inline-block;
     vertical-align: middle;
-    background-color:#858585;
+    background-color:#33a1d1;
     -webkit-transform: perspective(1px) translateZ(0);
     transform: perspective(1px) translateZ(0);
     box-shadow: 0 0 1px transparent;

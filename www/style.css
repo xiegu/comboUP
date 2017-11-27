@@ -1,4 +1,7 @@
 /* custom navbar top */
 body{
   padding-top: 70px;
+  background: url("background.jpg");
+  background-position: center;
+  background-size: cover;
 }

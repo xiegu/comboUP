@@ -5,9 +5,9 @@ account: xiegu
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 233835
-bundleId: 1091813
+bundleId: 1098336
 url: https://xiegu.shinyapps.io/comboUp/
-when: 1511411630.18781
+when: 1511768477.24748
 asMultiple: FALSE
 asStatic: FALSE
-ignoredFiles: app.R.bak2|comboup.out
+ignoredFiles: app.R.bak2

@@ -16,12 +16,12 @@ source('util.R', local = TRUE)
 #-----------------------------------------
 
 ui <- navbarPage(
-  'NICE',
+  span(style = 'font-weight:normal;font-size:30px', 'NICE'),
   position = 'fixed-top',
   theme = shinytheme("flatly"),
-  
+  windowTitle = 'NICE - Next-generation Interactive Context Engine',
   tabPanel(
-    '套餐选择',
+    span(style = 'font-weight:normal;font-size:20px','套餐选择'),
     tags$head(includeCSS('www/style.css'),
               includeCSS('www/hover.css')),
     
@@ -29,7 +29,7 @@ ui <- navbarPage(
       column(
         width = 3,
         
-        wellPanel(
+        wellPanel(style = 'opacity: 0.85',
           sliderInput(
             'Bed',
             '卧室',
@@ -89,7 +89,7 @@ ui <- navbarPage(
         actionButton(
           'Reset',
           '清除',
-          class = 'btn-info',
+          class = 'btn-secondary',
           icon = icon('refresh'),
           width = '49%'
         )
@@ -97,7 +97,7 @@ ui <- navbarPage(
       ),
       column(
         width = 3,
-        wellPanel(
+        wellPanel(style = 'opacity: 0.85',
           sliderInput(
             'People',
             '住户人数',
@@ -120,7 +120,7 @@ ui <- navbarPage(
           checkboxInput('PM', '根据地址是否选择自清洁/净化pm2.5空调？', FALSE),
           textInput('Phone', '联系电话', value = '', placeholder = '请填入联系电话')
         ),
-        wellPanel(style = 'background:#dddddd;',
+        wellPanel(style = 'opacity:0.85',
                   uiOutput('tagPicker'))
         
       ),
@@ -147,6 +147,18 @@ ui <- navbarPage(
             )
           )
         ),
+        useShinyjs(),
+        actionButton('Logic', '套餐选择逻辑', class = 'btn-info'),
+        wellPanel(style = 'opacity:0.6;background:black;color:white',
+                  id = 'LogicPanel',
+                  p('根据住房户型、用户预算和所需家电品类，初步筛选目标家电产品'),
+                  p('根据用户输入基本信息，客制化精确筛选目标家电产品：'),
+                  p('地址：', verbatimTextOutput('AddressOut')),
+                  p('住户成员构成：', verbatimTextOutput('Member')),
+                  p('联系电话：', verbatimTextOutput('PhoneOut'))
+        ),
+        actionButton('bought', '购买记录', class = 'btn-success'),
+        hr(),
         tabsetPanel(
           tabPanel(
             h2('热卖产品'),
@@ -154,6 +166,7 @@ ui <- navbarPage(
             actionButton('sale1', '套餐一', class = 'hvr-fade-1'),
             actionButton('sale2', '套餐二', class = 'hvr-fade-2'),
             actionButton('sale3', '套餐三', class = 'hvr-fade-3'),
+            
             uiOutput('ComboOutput1')
           ),
           tabPanel(
@@ -164,20 +177,8 @@ ui <- navbarPage(
             actionButton('favor3', '套餐三', class = 'hvr-fade-3'),
             uiOutput('ComboOutput2')
           )
-        ),
-        br(),
-        useShinyjs(),
-        actionButton('Logic', '套餐选择逻辑', class = 'btn-info'),
-        wellPanel(
-          id = 'LogicPanel',
-          style = 'background-color: white',
-          p('根据住房户型、用户预算和所需家电品类，初步筛选目标家电产品'),
-          p('根据用户输入基本信息，客制化精确筛选目标家电产品：'),
-          p('地址：', verbatimTextOutput('AddressOut')),
-          p('住户成员构成：', verbatimTextOutput('Member')),
-          p('联系电话：', verbatimTextOutput('PhoneOut'))
-        ),
-        actionButton('bought', '购买记录', class = 'btn-success')
+        )
+        
         
       )
       
@@ -191,7 +192,8 @@ ui <- navbarPage(
       # )
     )
   ),
-  tabPanel('关于我们',
+  tabPanel(style = 'color:white',
+    span(style = 'font-weight:normal;font-size:20px','关于我们'),
            tags$head(includeCSS('www/style.css')),
            includeMarkdown('README.md'))
 )
@@ -600,7 +602,7 @@ server <- function(input, output, session) {
   observeEvent(input$Submit, {
     updateProgressBar(session = session, id = "pb", value = 0) # reinitialize to 0 if you run the calculation several times
     session$sendCustomMessage(type = 'launch-modal', "pb-modal") # launch the modal
-    ww$tableList <- saletable()    # run calculation
+    ww$tableList <- saletable()
     Sys.sleep(0.5)
     
     updateProgressBar(session = session, id = "pb", value = 50)
@@ -631,21 +633,27 @@ server <- function(input, output, session) {
       return(NULL)
     }
     if (is.null(w$ui)) {
-      return(h3('没有符合条件的组合，请重新搜索。'))
+      return(h3(style = 'coloe:white', '没有符合条件的组合，请重新搜索。'))
     } else if (w$ui == 'Initial status') {
       return(NULL)
     } else{
       tagList(
+        wellPanel(style = 'opacity: 0.6;background:black;color:white',
         datatable(
           w$ui,
+          width = '800px',
           rownames = FALSE,
           colnames = c('产品名称', '价格', '匹配度', '品类', '总价'),
           caption = tags$caption(style = 'color: black', h2(
-            style = 'text-align: right;', paste('Price', prettyNum(sum(w$ui$total), big.mark = ','), sep = ': ')
+            style = 'text-align: right;color:gold', paste('Price', prettyNum(sum(w$ui$total), big.mark = ','), sep = ': ')
           )),
           options = list(dom = 't')
         ) %>%
-          formatPercentage('match', 1)
+          formatStyle('name', fontWeight = 'bold') %>%
+          formatPercentage('match', 1) %>%
+          formatStyle('total', color = 'gold') %>%
+          formatStyle(colnames(w$ui), color = '#fff', backgroundColor = '#2d2d2d')
+      )
       )
     }
   })
@@ -667,21 +675,27 @@ server <- function(input, output, session) {
       return(NULL)
     }
     if (is.null(v$ui)) {
-      return(h3('没有符合条件的组合，请重新搜索。'))
+      return(h3(style = 'color:white', '没有符合条件的组合，请重新搜索。'))
     } else if (v$ui == 'Initial status') {
       return(NULL)
     } else{
       tagList(
+        wellPanel(style = 'opacity: 0.6;background:black;color:white',
         datatable(
           v$ui,
+          width = '800px',
           rownames = FALSE,
           colnames = c('产品名称', '价格', '匹配度', '品类', '总价'),
           caption = tags$caption(style = 'color: black', h2(
-            style = 'text-align: right;', paste('Price', prettyNum(sum(v$ui$total), big.mark = ','), sep = ': ')
+            style = 'text-align: right;color:gold', paste('Price', prettyNum(sum(v$ui$total), big.mark = ','), sep = ': ')
           )),
           options = list(dom = 't')
         ) %>%
-          formatPercentage('match', 1)
+          formatStyle('name', fontWeight = 'bold') %>%
+          formatPercentage('match', 1) %>%
+        formatStyle('total', color = 'gold') %>%
+          formatStyle(colnames(v$ui), color = '#fff', backgroundColor = '#2d2d2d')
+      )
       )
     }
   })

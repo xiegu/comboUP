@@ -1,4 +1,4 @@
-# comboUP
+# NICE
 
 V1.0
 
