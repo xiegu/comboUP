@@ -1,6 +1,10 @@
 library(dplyr)
 library(magrittr)
 
+# login configuration
+num_fails_to_lockout <- 5
+
+# functions for modeling
 multiAndGrep <- function(patterns, x) {
   n <- 0
   for (i in patterns) {
