@@ -1190,7 +1190,7 @@
   .hvr-fade-1 {
     display: inline-block;
     vertical-align: middle;
-    background-color:#3072cb;
+    background-color:#A9A9A9;
     -webkit-transform: perspective(1px) translateZ(0);
     transform: perspective(1px) translateZ(0);
     box-shadow: 0 0 1px transparent;
@@ -1201,15 +1201,15 @@
     transition-property: color, background-color;
   }
 .hvr-fade-1:hover, .hvr-fade-1:focus, .hvr-fade-1:active {
-  background-color: #ff6565;
-  border-color: #ff6565;
+  background-color: #065AA2;
+  border-color: #065AA2;
     color: white;
 }
 
   .hvr-fade-2 {
     display: inline-block;
     vertical-align: middle;
-    background-color:#4a709f;
+    background-color:#A9A9A9;
     -webkit-transform: perspective(1px) translateZ(0);
     transform: perspective(1px) translateZ(0);
     box-shadow: 0 0 1px transparent;
@@ -1220,15 +1220,15 @@
     transition-property: color, background-color;
   }
 .hvr-fade-2:hover, .hvr-fade-2:focus, .hvr-fade-2:active {
-  background-color: #ff6565;
-  border-color: #ff6565;
+  background-color: #065AA2;
+  border-color: #065AA2;
     color: white;
 }
 
   .hvr-fade-3 {
     display: inline-block;
     vertical-align: middle;
-    background-color:#33a1d1;
+    background-color:#A9A9A9;
     -webkit-transform: perspective(1px) translateZ(0);
     transform: perspective(1px) translateZ(0);
     box-shadow: 0 0 1px transparent;
@@ -1239,8 +1239,28 @@
     transition-property: color, background-color;
   }
 .hvr-fade-3:hover, .hvr-fade-3:focus, .hvr-fade-3:active {
-  background-color: #ff6565;
-  border-color: #ff6565;
+  background-color: #065AA2;
+  border-color: #065AA2;
+    color: white;
+}
+
+  .hvr-fade-submit {
+    display: inline-block;
+    vertical-align: middle;
+    background-color:rgba(128,128,128,0);
+    border-color:rgba(128,128,128,0);
+    -webkit-transform: perspective(1px) translateZ(0);
+    transform: perspective(1px) translateZ(0);
+    box-shadow: 0 0 1px transparent;
+    overflow: hidden;
+    -webkit-transition-duration: 0.3s;
+    transition-duration: 0.3s;
+    -webkit-transition-property: color, background-color;
+    transition-property: color, background-color;
+  }
+.hvr-fade-submit:hover, .hvr-fade-3:focus, .hvr-fade-3:active {
+  background-color: #E8007E;
+  border-color: #E8007E;
     color: white;
 }
 /* Back Pulse */

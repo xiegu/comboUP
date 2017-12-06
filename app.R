@@ -16,7 +16,7 @@ source('util.R', local = TRUE)
 #-----------------------------------------
 
 ui <- navbarPage(
-  span(style = 'font-weight:normal;font-size:30px', 'NICE'),
+  span(style = 'font-weight:normal;font-size:25px', 'NICE'),
   position = 'fixed-top',
   theme = shinytheme("flatly"),
   windowTitle = 'NICE - Next-generation Interactive Context Engine',
@@ -25,172 +25,238 @@ ui <- navbarPage(
     tags$head(includeCSS('www/style.css'),
               includeCSS('www/hover.css')),
     
+    fluidRow(column(offset = 8,
+                    width =4,
+                    tags$img(src = 'logo.jpg')
+                    )
+             ),
     fluidRow(
-      column(
-        width = 3,
-        
-        wellPanel(style = 'opacity: 0.85',
-          sliderInput(
-            'Bed',
-            '卧室',
-            min = 1,
-            max = 4 ,
-            value = 2
-          ),
-          sliderInput(
-            'Living',
-            '客厅',
-            min = 1,
-            max = 4,
-            value  = 1
-          ),
-          sliderInput(
-            'Budget',
-            '预算',
-            min = 20000,
-            max = 100000,
-            step = 5000,
-            value = 20000
-          ),
-          sliderInput(
-            'Range',
-            '预算调整幅度+/-',
-            min = 0.05,
-            max = 0.2,
-            step = 0.05,
-            value = 0.1
-          ),
-          selectizeInput(
-            'Combo',
-            '家电品类',
-            choices = c(
-              '洗衣机' = 'wash',
-              '空调' = 'air',
-              '冰箱' = 'ref',
-              '洗碗机' = 'dish',
-              '油烟机' = 'hood',
-              '燃气灶' = 'gas',
-              '电视' = 'tv'
-            ),
-            selected = c('ref', 'air', 'wash', 'hood', 'gas'),
-            multiple = TRUE,
-            options = list(placeholder = '请至少选择两个家电品类')
-          ),
-          uiOutput('FloorAir'),
-          checkboxInput('品牌偏好', '卡萨帝', FALSE)
-        ),
-        actionButton(
-          "Submit" ,
-          '提交',
-          class = 'btn-primary',
-          icon = icon('upload'),
-          width = '49%'
-        ),
-        actionButton(
-          'Reset',
-          '清除',
-          class = 'btn-secondary',
-          icon = icon('refresh'),
-          width = '49%'
-        )
-        
-      ),
-      column(
-        width = 3,
-        wellPanel(style = 'opacity: 0.85',
-          sliderInput(
-            'People',
-            '住户人数',
-            min = 1,
-            max = 10,
-            value = 3
-          ),
-          checkboxInput('Old', '是否有老人', FALSE),
-          radioButtons(
-            'Child',
-            '是否有小孩',
-            choices = list(
-              '无' = '无',
-              '3岁以下' = '3岁以下',
-              '3岁以上' = '3岁以上'
-            ),
-            FALSE
-          ),
-          textInput('Address', '地址', value = '', placeholder = '请填入住宅地址'),
-          checkboxInput('PM', '根据地址是否选择自清洁/净化pm2.5空调？', FALSE),
-          textInput('Phone', '联系电话', value = '', placeholder = '请填入联系电话')
-        ),
-        wellPanel(style = 'opacity:0.85',
-                  uiOutput('tagPicker'))
-        
-      ),
-      column(
-        width = 6,
-        # You can open the modal server-side, you have to put this in the ui :
-        tags$script("Shiny.addCustomMessageHandler('launch-modal', function(d) {$('#' + d).modal().focus();})"),
-        tags$script("Shiny.addCustomMessageHandler('remove-modal', function(d) {$('#' + d).modal('hide');})"),
-        
-        # Code for creating a modal
-        tags$div(
-          id = "pb-modal",
-          class="modal fade", tabindex="-1", `data-backdrop`="static", `data-keyboard`="false",
-          tags$div(
-            class="modal-dialog",
-            tags$div(
-              class = "modal-content",
-              tags$div(class="modal-header", tags$h4(class="modal-title", "推荐模型计算中")),
-              tags$div(
-                class="modal-body",
-                shinyWidgets::progressBar(id = "pb", value = 0, display_pct = TRUE)
-              ),
-              tags$div(class="modal-footer", tags$button(type="button", class="btn btn-default", `data-dismiss`="modal", "取消"))
-            )
-          )
-        ),
         useShinyjs(),
-        actionButton('Logic', '套餐选择逻辑', class = 'btn-info'),
-        wellPanel(style = 'opacity:0.6;background:black;color:white',
-                  id = 'LogicPanel',
-                  p('根据住房户型、用户预算和所需家电品类，初步筛选目标家电产品'),
-                  p('根据用户输入基本信息，客制化精确筛选目标家电产品：'),
-                  p('地址：', verbatimTextOutput('AddressOut')),
-                  p('住户成员构成：', verbatimTextOutput('Member')),
-                  p('联系电话：', verbatimTextOutput('PhoneOut'))
-        ),
-        actionButton('bought', '购买记录', class = 'btn-success'),
-        hr(),
-        tabsetPanel(
-          tabPanel(
-            h2('热卖产品'),
-            br(),
-            actionButton('sale1', '套餐一', class = 'hvr-fade-1'),
-            actionButton('sale2', '套餐二', class = 'hvr-fade-2'),
-            actionButton('sale3', '套餐三', class = 'hvr-fade-3'),
-            
-            uiOutput('ComboOutput1')
-          ),
-          tabPanel(
-            h2('用户最爱'),
-            br(),
-            actionButton('favor1', '套餐一', class = 'hvr-fade-1'),
-            actionButton('favor2', '套餐二', class = 'hvr-fade-2'),
-            actionButton('favor3', '套餐三', class = 'hvr-fade-3'),
-            uiOutput('ComboOutput2')
-          )
-        )
+          column(1,
+                  actionButton(
+                    "Submit" ,
+                    span(style = 'font-size:20px','提交'),
+                    class ='hvr-fade-submit',
+                    icon = icon('upload fa-2x'),
+                    width = '100%',
+                    style = 'height:80px'
+                  ),
+            actionButton(
+              'Reset',
+              span(style = 'font-size:20px', '返回'),
+              icon = icon('refresh fa-2x'),
+              class = 'hvr-fade-submit',
+              width = '100%',
+              style = 'height:80px'
+            )
         
-        
+      ),
+      column(width = 10,
+             fluidRow(
+               column(10, 
+             wellPanel(style = 'opacity: 1;color:white;background:#065AA2',
+                       id = 'ConfigPanel',
+                       fluidRow(
+                         column(3,
+                                sliderInput(
+                                  'Bed',
+                                  '卧室',
+                                  min = 1,
+                                  max = 4 ,
+                                  value = 2
+                                )
+                                
+                         ),
+                         column(3,
+                                sliderInput(
+                                  'Living',
+                                  '客厅',
+                                  min = 1,
+                                  max = 4,
+                                  value  = 1
+                                )
+                         ),
+                         column(3,
+                                sliderInput(
+                                  'Budget',
+                                  '预算',
+                                  min = 20000,
+                                  max = 100000,
+                                  step = 5000,
+                                  value = 30000
+                                )
+                         ),
+                         column(3,
+                                sliderInput(
+                                  'Range',
+                                  '预算调整幅度+/-',
+                                  min = 0.05,
+                                  max = 0.2,
+                                  step = 0.05,
+                                  value = 0.1
+                                )
+                         )
+                       ),
+                       hr(),
+                       fluidRow(
+                         column(4,
+                                div(style = 'padding: 0px 0px 5px;',strong('家电品类'), actionBttn(inputId='catWiki', size = 'xs', color = 'primary', style = 'fill', icon('question-circle-o', 'fa-lg'))),
+                                selectizeInput(
+                                  'Combo',
+                                  NULL,
+                                  choices = c(
+                                    '洗衣机' = 'wash',
+                                    '空调' = 'air',
+                                    '冰箱' = 'ref',
+                                    '洗碗机' = 'dish',
+                                    '油烟机' = 'hood',
+                                    '燃气灶' = 'gas',
+                                    '电视' = 'tv'
+                                  ),
+                                  selected = c('ref', 'air', 'wash', 'hood', 'gas'),
+                                  multiple = TRUE,
+                                  options = list(placeholder = '请至少选择两个家电品类')
+                                )
+                         ),
+                         column(2,
+                                uiOutput('FloorAir')
+                         ),
+                         column(3,
+                                div(style = 'padding: 0px 0px 5px;',strong('品牌偏好')),
+                                checkboxInput('BrandPref', '卡萨帝', FALSE)
+                                )
+                       ),
+                       hr(),
+                       fluidRow(
+                         column(2,
+                                sliderInput(
+                                  'People',
+                                  '住户人数',
+                                  min = 1,
+                                  max = 10,
+                                  value = 3,
+                                  step = 1
+                                )
+                         ),
+                         column(2,
+                                selectizeInput('Old', '老人', choices = list('无' = '无',
+                                                                              '有' = '有'),
+                                               selected = NULL, options = list(placeholder = '家中有无老人', onInitialize = I('function() { this.setValue(""); }'))
+                                )
+                         ),
+                         column(2,
+                                selectizeInput(
+                                  'Child',
+                                  '小孩',
+                                  choices = list(
+                                    '无' = '无',
+                                    '有，3岁以下' = '3岁以下',
+                                    '有，3岁以上' = '3岁以上'
+                                  ),
+                                  selected = NULL, options = list(placeholder = '家中有无小孩', onInitialize = I('function() { this.setValue(""); }'))
+                                  
+                                )
+                         )
+                         ),
+                       fluidRow(
+                         column(2,
+                                textInput('Phone', '联系电话', value = '', placeholder = '请填入联系电话')
+                         ),
+                         column(2,
+                                selectizeInput('UserProvince', '用户地址', choices = unique(filter(china_pcr, province != 'province')$province) , selected = NULL, options = list(placeholder = '省份', onInitialize = I('function() { this.setValue(""); }')))
+                         ),
+                         column(2,
+                                div(style = 'padding: 0px 0px 26px;'),
+                                uiOutput('UserCity')
+                                #selectizeInput('UserCity', NULL, choices = unique(china_pcr$city), selected = NULL, options = list(placeholder = '城市', onInitialize = I('function() { this.setValue(""); }')))
+                         ),
+                         column(3,
+                                div(style = 'padding: 0px 0px 26px;'),
+                                textInput('Address', NULL, value = '', placeholder = '请填入具体地址')
+                                #checkboxInput('PM', '根据地址是否选择自清洁/净化pm2.5空调？', FALSE)
+                         )
+                       )
+                       #####
+                       
+             )
+             ),
+             column(2,
+                    wellPanel(style = 'opacity:1;color:white;background:#065AA2',
+                              id= 'TagPanel',
+                      uiOutput('tagPicker')
+                    )
+                    )
+             ),
+             fluidRow(
+               column(
+                 width = 5,
+                 # You can open the modal server-side, you have to put this in the ui :
+                 tags$script("Shiny.addCustomMessageHandler('launch-modal', function(d) {$('#' + d).modal().focus();})"),
+                 tags$script("Shiny.addCustomMessageHandler('remove-modal', function(d) {$('#' + d).modal('hide');})"),
+                 
+                 # Code for creating a modal
+                 tags$div(
+                   id = "pb-modal",
+                   class="modal fade", tabindex="-1", `data-backdrop`="static", `data-keyboard`="false",
+                   tags$div(
+                     class="modal-dialog",
+                     tags$div(
+                       class = "modal-content",
+                       tags$div(class="modal-header", tags$h4(class="modal-title", "推荐模型计算中")),
+                       tags$div(
+                         class="modal-body",
+                         shinyWidgets::progressBar(id = "pb", value = 0, display_pct = TRUE)
+                       ),
+                       tags$div(class="modal-footer", tags$button(type="button", class="btn btn-default", `data-dismiss`="modal", "取消"))
+                     )
+                   )
+                 ),
+                 useShinyjs(),
+                hidden(actionButton('Logic', '套餐选择逻辑', class = 'btn-info')),
+                hidden(wellPanel(style = 'opacity:0.6;background:black;color:white',
+                           id = 'LogicPanel',
+                           p('根据住房户型、用户预算和所需家电品类，初步筛选目标家电产品'),
+                           p('根据用户输入基本信息，客制化精确筛选目标家电产品：'),
+                           uiOutput('AddressOut'),
+                           uiOutput('Member'),
+                           uiOutput('PhoneOut')
+                 )),
+                 hidden(actionButton('Bought', '购买记录', class = 'btn-success'))
+               ),
+               column(width = 7,
+                      hidden(div(id = 'ResultPanel', 
+                      tabsetPanel(
+                        tabPanel(id = 'SalePanel',
+                          h2('热卖产品'),
+                          br(),
+                          actionButton('sale1', '套餐一', class = 'hvr-fade-1'),
+                          actionButton('sale2', '套餐二', class = 'hvr-fade-2'),
+                          actionButton('sale3', '套餐三', class = 'hvr-fade-3'),
+                          
+                          uiOutput('ComboOutput1')
+                        ),
+                        tabPanel(id = 'FavorPanel',
+                          h2('用户最爱'),
+                          br(),
+                          actionButton('favor1', '套餐一', class = 'hvr-fade-1'),
+                          actionButton('favor2', '套餐二', class = 'hvr-fade-2'),
+                          actionButton('favor3', '套餐三', class = 'hvr-fade-3'),
+                          uiOutput('ComboOutput2')
+                        )
+                      )
+                      )
+                      )
+                      
+                      
+               )
+             )
       )
       
-      
-      
-      
-      # hr(),
-      # fluidRow(
-      #     uiOutput('productTable')
-      #
-      # )
     )
+    
+   
+      
+      
   ),
   tabPanel(style = 'color:white',
     span(style = 'font-weight:normal;font-size:20px','关于我们'),
@@ -201,30 +267,107 @@ ui <- navbarPage(
 
 server <- function(input, output, session) {
   
-  observeEvent(input$Logic == FALSE, {
-    # Change the following line for more examples
-    toggle("LogicPanel")
+  # observe({
+  #   hide('ResultPanel')
+  #   hide('Logic')
+  #   hide('Bought')
+  # })
+  # observe({
+  #   hide('SalePanel')
+  #   hide('sale1')
+  #   hide('sale2')
+  #   hide('sale3')
+  # })
+  # observe({
+  #   hide('FavorPanel')
+  #   hide('favor1')
+  #   hide('favor2')
+  #   hide('favor3')
+  # })
+  
+  observeEvent(input$Submit, {
+    hide("ConfigPanel", anim = TRUE, time = 0.2)
+    hide("TagPanel", anim = TRUE, time = 0.2)
+    show('ResultPanel', anim = TRUE, time = 0.2)
+    # show('SalePanel', anim = TRUE, time = 0.2)
+    # show('FavorPanel', anim = TRUE, time = 0.2)
+    # show('sale1', anim = TRUE, time = 0.2)
+    # show('sale2', anim = TRUE, time = 0.2)
+    # show('sale3', anim = TRUE, time = 0.2)
+    # show('favor1', anim = TRUE, time = 0.2)
+    # show('favor2', anim = TRUE, time = 0.2)
+    # show('favor3', anim = TRUE, time = 0.2)
+    show('Logic', anim = TRUE, time = 0.2)
+    show('Bought', anim = TRUE, time = 0.2)
+    show('LogicPanel', anim = TRUE, time = 0.2)
   })
   
-  output$AddressOut <- renderText({
-    paste(input$Address, ' 河北石家庄最近6个月平均污染指数(pm2.5): ', '严重', sep = '')
+ 
+
+  observeEvent(input$Reset, {
+    show("ConfigPanel", anim = TRUE, time = 0.2)
+    show("TagPanel", anim = TRUE, time = 0.2)
+    hide('ResultPanel', anim = TRUE, time = 0.2)
+    # hide('SalePanel', anim = TRUE, time = 0.2)
+    # hide('FavorPanel', anim = TRUE, time = 0.2)
+    # hide('sale1', anim = TRUE, time = 0.2)
+    # hide('sale2', anim = TRUE, time = 0.2)
+    # hide('sale3', anim = TRUE, time = 0.2)
+    # hide('favor1', anim = TRUE, time = 0.2)
+    # hide('favor2', anim = TRUE, time = 0.2)
+    # hide('favor3', anim = TRUE, time = 0.2)
+    hide('Logic', anim = TRUE, time = 0.2)
+    hide('Bought', anim = TRUE, time = 0.2)
+    hide('LogicPanel', anim = TRUE, time =0.2)
   })
   
-  output$Member <- renderText({
-    paste(
-      '家中',
-      ifelse(input$Old, '有', '无'),
-      '老人，',
-      ifelse(input$Child == '无', '无', '有'),
-      input$Child,
-      '小孩',
-      sep = '',
-      '，提高安全系数比重'
+  observeEvent(input$catWiki, {
+    showModal(modalDialog(
+      title = "品类选择",
+      footer = modalButton("返回"),
+      size = 'm',
+      "用户可以根据自身需求定制家电品类。模型按照品类的排列顺序，确定产品的优先选择权。例如，如果排列顺序为空调、洗衣机、冰箱，模型会根据“热卖产品”或“用户喜爱”模式，优先推荐空调产品，再依次推荐洗衣机和冰箱产品。",
+      easyClose = TRUE
+    ))
+  })
+  
+  
+  output$AddressOut <- renderUI({
+    tagList(
+    p(style = 'color: gold; font-size:20px', paste(input$UserProvince, input$City, input$Address, ifelse(input$UserProvince %in% c("山西省", "吉林省", "宁夏回族自治区", "北京市", "辽宁省", "黑龙江省", "新疆维吾尔自治区", "内蒙古自治区", "河北省", "青海省",          
+                                                                                          "甘肃省", "西藏自治区", "天津市", "陕西省", "四川省", "山东省"), '，气候偏干燥，模型优先推荐带有加湿功能的产品', '，气候偏潮湿，模型优先推荐带有除湿功能的产品'), sep = '')
+    ),
+    p(style = 'color:gold; font-size:20px', paste(ifelse(input$UserProvince %in% c('河北省', '辽宁省', '吉林省', '黑龙江省'), 'pm 2.5污染指数严重，模型优先推荐自清洁功能的产品', 'pm2.5污染指数良好')))
     )
   })
   
-  output$PhoneOut <- renderText({
-    paste('用户', input$Phone, '购买过海尔家电产品', sep = '', '，根据购买记录匹配推荐产品优先级')
+  output$Member <- renderUI({
+    tagList(
+      p(style = 'color:gold; font-size:20px',
+    paste(
+      '家中',
+      input$Old,
+      '老人，',
+      ifelse(input$Child == '无', '', '有'),
+      input$Child,
+      '小孩',
+      ifelse(input$Old == '无' & input$Child == '无', '', '，提高安全系数比重'),
+      sep = ''
+    )
+      )
+    )
+  })
+  
+  output$PhoneOut <- renderUI({
+    tagList(
+    p(style = 'color:gold; font-size:20px',
+      if(input$Phone == '13901682345'){
+    paste('用户', input$Phone, '，查找到购买记录，已购买产品包含以下标签：节能|环保', sep = '', '，根据购买记录匹配推荐产品优先级')
+      }else{
+          paste('用户', input$Phone, '，未查找到购买记录', sep='')
+        }
+    )
+    )
   })
   reset <- reactiveValues(data = NULL)
   
@@ -240,6 +383,24 @@ server <- function(input, output, session) {
     if (!'air' %in% input$Combo) {
       return()
     } else{
+      tagList(
+        tags$style(
+          ".js-irs-0 .irs-bar {
+border-top-color: #fbf23d;
+border-bottom-color: #fbf23d;
+color:black;
+} 
+
+.js-irs-0 .irs-bar-edge {
+border-color: #fbf23d;
+color:black;
+}
+
+.js-irs-0 .irs-single, .js-irs-0 .irs-bar-edge, .js-irs-0 .irs-bar {
+background: #fbf23d;
+color:black;
+}"
+        ),
       sliderInput(
         'NoFloorAir',
         '立式空调',
@@ -248,10 +409,17 @@ server <- function(input, output, session) {
         step = 1,
         value = input$Living
       )
+      )
     }
   })
   
-  
+  output$UserCity <- renderUI({
+    city <- filter(china_pcr, province == input$UserProvince) %>%.$city %>% unique %>% as.character
+    ui <- list(
+      selectizeInput('City', NULL, choices = city, selected = NULL, options = list(placeholder = '城市', onInitialize = I('function() { this.setValue(""); }')))
+      
+    )
+  })
   output$tagPicker <- renderUI({
     ui <- list(
       ref = selectizeInput(

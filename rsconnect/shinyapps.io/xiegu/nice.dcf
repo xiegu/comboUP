@@ -1,13 +1,13 @@
-name: comboUp
-title: comboUp
+name: nice
+title: nice
 username:
 account: xiegu
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
-appId: 233835
-bundleId: 1111615
-url: https://xiegu.shinyapps.io/comboUp/
-when: 1512283426.30716
+appId: 244554
+bundleId: 1117820
+url: https://xiegu.shinyapps.io/nice/
+when: 1512523892.44728
 asMultiple: FALSE
 asStatic: FALSE
 ignoredFiles: app.R.bak2

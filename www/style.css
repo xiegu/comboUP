@@ -1,7 +1,113 @@
 /* custom navbar top */
 body{
   padding-top: 70px;
-  background: url("background.jpg");
-  background-position: center;
+  background-image: url('background.jpg');
   background-size: cover;
+  background-repeat: no-repeat;
+}
+
+#Phone {
+  height:34px;
+  padding:1px 1px 1px 5px;
+}
+
+#Address {
+  height:34px;
+  padding:1px 1px 1px 5px;
+}
+
+.js-irs-0 .irs-bar {
+border-top-color: #fbf23d;
+border-bottom-color: #fbf23d;
+color:black;
+} 
+
+.js-irs-0 .irs-bar-edge {
+border-color: #fbf23d;
+color:black;
+}
+
+.js-irs-0 .irs-single, .js-irs-0 .irs-bar-edge, .js-irs-0 .irs-bar {
+background: #fbf23d;
+color:black;
+}
+
+.js-irs-1 .irs-bar {
+border-top-color: #fbf23d;
+border-bottom-color: #fbf23d;
+color:black;
+} 
+
+.js-irs-1 .irs-bar-edge {
+border-color: #fbf23d;
+color:black;
+}
+
+.js-irs-1 .irs-single, .js-irs-1 .irs-bar-edge, .js-irs-1 .irs-bar {
+background: #fbf23d;
+color:black;
+}
+
+.js-irs-2 .irs-bar {
+border-top-color: #fbf23d;
+border-bottom-color: #fbf23d;
+color:black;
+} 
+
+.js-irs-2 .irs-bar-edge {
+border-color: #fbf23d;
+color:black;
+}
+
+.js-irs-2 .irs-single, .js-irs-2 .irs-bar-edge, .js-irs-2 .irs-bar {
+background: #fbf23d;
+color:black;
+}
+
+.js-irs-3 .irs-bar {
+border-top-color: #fbf23d;
+border-bottom-color: #fbf23d;
+color:black;
+} 
+
+.js-irs-3 .irs-bar-edge {
+border-color: #fbf23d;
+color:black;
+}
+
+.js-irs-3 .irs-single, .js-irs-3 .irs-bar-edge, .js-irs-3 .irs-bar {
+background: #fbf23d;
+color:black;
+}
+
+.js-irs-4 .irs-bar {
+border-top-color: #fbf23d;
+border-bottom-color: #fbf23d;
+color:black;
+} 
+
+.js-irs-4 .irs-bar-edge {
+border-color: #fbf23d;
+color:black;
+}
+
+.js-irs-4 .irs-single, .js-irs-4 .irs-bar-edge, .js-irs-4 .irs-bar {
+background: #fbf23d;
+color:black;
+}
+
+.js-irs-5 .irs-bar {
+border-top-color: #fbf23d;
+border-bottom-color: #fbf23d;
+color:black;
+} 
+
+.js-irs-5 .irs-bar-edge {
+border-color: #fbf23d;
+color:black;
+}
+
+.js-irs-5 .irs-single, .js-irs-5 .irs-bar-edge, .js-irs-5 .irs-bar {
+background: #fbf23d;
+color:black;
 }
