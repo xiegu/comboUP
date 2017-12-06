@@ -230,8 +230,8 @@ ui <- navbarPage(
                           h2('热卖产品'),
                           br(),
                           actionButton('sale1', '套餐一', class = 'hvr-fade-1'),
-                          actionButton('sale2', '套餐二', class = 'hvr-fade-2'),
-                          actionButton('sale3', '套餐三', class = 'hvr-fade-3'),
+                          actionButton('sale2', '套餐二', class = 'hvr-fade-1'),
+                          actionButton('sale3', '套餐三', class = 'hvr-fade-1'),
                           
                           uiOutput('ComboOutput1')
                         ),
@@ -239,8 +239,8 @@ ui <- navbarPage(
                           h2('用户最爱'),
                           br(),
                           actionButton('favor1', '套餐一', class = 'hvr-fade-1'),
-                          actionButton('favor2', '套餐二', class = 'hvr-fade-2'),
-                          actionButton('favor3', '套餐三', class = 'hvr-fade-3'),
+                          actionButton('favor2', '套餐二', class = 'hvr-fade-1'),
+                          actionButton('favor3', '套餐三', class = 'hvr-fade-1'),
                           uiOutput('ComboOutput2')
                         )
                       )
