@@ -16,6 +16,9 @@ body{
   padding:1px 1px 1px 5px;
 }
 
+.selectpicker {
+  color:black;
+}
 .irs-bar {
 border-top-color: #fbf23d;
 border-bottom-color: #fbf23d;

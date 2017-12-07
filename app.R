@@ -111,7 +111,8 @@ server <- function(input, output, session) {
                                                  min = 20000,
                                                  max = 100000,
                                                  step = 5000,
-                                                 value = 30000
+                                                 value = 30000,
+                                                 pre = '￥'
                                                )
                                         ),
                                         column(3,
@@ -129,7 +130,10 @@ server <- function(input, output, session) {
                                       hr(),
                                       fluidRow(
                                         column(4,
-                                               div(style = 'padding: 0px 0px 5px;',strong('家电品类'), actionBttn(inputId='catWiki', size = 'xs', color = 'primary', style = 'fill', icon('question-circle-o', 'fa-lg'))),
+                                               div(style = 'padding: 0px 0px 5px 0px;',strong('家电品类'),
+                                                   #actionBttn(inputId='catWiki', size = 'xs', color = 'primary', style = 'fill', icon('question-circle-o', 'fa-lg'))
+                                                   actionLink(style = 'background:rgba(20,0,0,0);border-color:#065AA2; color:white;', inputId = 'CatWiki', label = NULL, icon = icon('question-circle-o'))
+                                                   ),
                                                selectizeInput(
                                                  'Combo',
                                                  NULL,
@@ -151,7 +155,7 @@ server <- function(input, output, session) {
                                                uiOutput('FloorAir')
                                         ),
                                         column(3,
-                                               div(style = 'padding: 0px 0px 5px;',strong('品牌偏好')),
+                                               div(style = 'padding: 0px 0px 5px 0px;',strong('品牌偏好')),
                                                awesomeCheckbox('BrandPref', '卡萨帝', FALSE)
                                         )
                                       ),
@@ -261,7 +265,6 @@ server <- function(input, output, session) {
                                                   actionButton('sale1', '套餐一', class = 'hvr-fade-1'),
                                                   actionButton('sale2', '套餐二', class = 'hvr-fade-1'),
                                                   actionButton('sale3', '套餐三', class = 'hvr-fade-1'),
-                                                  
                                                   uiOutput('ComboOutput1')
                                          ),
                                          tabPanel(id = 'FavorPanel',
@@ -316,7 +319,7 @@ server <- function(input, output, session) {
     hide('LogicPanel', anim = TRUE, time =0.2)
   })
   
-  observeEvent(input$catWiki, {
+  observeEvent(input$CatWiki, {
     showModal(modalDialog(
       title = "品类选择",
       footer = modalButton("返回"),
@@ -774,31 +777,45 @@ server <- function(input, output, session) {
     w$ui <- ww$tableList[['combo3']]
   })
   
+  observeEvent(input$Reset,{
+    w$ui <- 'Initial status'
+  })
+  
+  output$HotResult <- renderDataTable({
+    if (is.null(w$ui)) {
+      return(NULL)
+    } else if (w$ui == 'Initial status') {
+      return(NULL)
+    }else{
+    datatable(
+      w$ui,
+      width = '800px',
+      rownames = FALSE,
+      colnames = c('产品名称', '价格', '匹配度', '品类', '总价'),
+      caption = tags$caption(style = 'color: black', h2(
+        style = 'text-align: right;color:gold', paste('Price', prettyNum(sum(w$ui$total), big.mark = ','), sep = ': ')
+      )),
+      options = list(dom = 't')
+    ) %>%
+      formatStyle('name', fontWeight = 'bold') %>%
+      formatPercentage('match', 1) %>%
+      formatStyle('total', color = 'gold') %>%
+      formatStyle(colnames(w$ui), color = '#fff', backgroundColor = '#2d2d2d')
+    }
+  })
+  
   output$ComboOutput1 <- renderUI({
     if (is.null(reset$data)) {
       return(NULL)
     }
     if (is.null(w$ui)) {
-      return(h3(style = 'coloe:white', '没有符合条件的组合，请重新搜索。'))
+      return(h3(style = 'color:white', '没有符合条件的组合，请重新搜索。'))
     } else if (w$ui == 'Initial status') {
       return(NULL)
     } else{
       tagList(
         wellPanel(style = 'opacity: 0.6;background:black;color:white',
-                  datatable(
-                    w$ui,
-                    width = '800px',
-                    rownames = FALSE,
-                    colnames = c('产品名称', '价格', '匹配度', '品类', '总价'),
-                    caption = tags$caption(style = 'color: black', h2(
-                      style = 'text-align: right;color:gold', paste('Price', prettyNum(sum(w$ui$total), big.mark = ','), sep = ': ')
-                    )),
-                    options = list(dom = 't')
-                  ) %>%
-                    formatStyle('name', fontWeight = 'bold') %>%
-                    formatPercentage('match', 1) %>%
-                    formatStyle('total', color = 'gold') %>%
-                    formatStyle(colnames(w$ui), color = '#fff', backgroundColor = '#2d2d2d')
+                  dataTableOutput('HotResult')
         )
       )
     }
@@ -816,6 +833,33 @@ server <- function(input, output, session) {
     v$ui <- vv$tableList[['combo3']]
   })
   
+  observeEvent(input$Reset,{
+    v$ui <- 'Initial status'
+  })
+  
+  output$FavResult <- renderDataTable({
+    if (is.null(v$ui)) {
+      return(NULL)
+    } else if (v$ui == 'Initial status') {
+      return(NULL)
+    }else{
+    datatable(
+      v$ui,
+      width = '800px',
+      rownames = FALSE,
+      colnames = c('产品名称', '价格', '匹配度', '品类', '总价'),
+      caption = tags$caption(style = 'color: black', h2(
+        style = 'text-align: right;color:gold', paste('Price', prettyNum(sum(v$ui$total), big.mark = ','), sep = ': ')
+      )),
+      options = list(dom = 't')
+    ) %>%
+      formatStyle('name', fontWeight = 'bold') %>%
+      formatPercentage('match', 1) %>%
+      formatStyle('total', color = 'gold') %>%
+      formatStyle(colnames(v$ui), color = '#fff', backgroundColor = '#2d2d2d')
+    }
+  })
+  
   output$ComboOutput2 <- renderUI({
     if (is.null(reset$data)) {
       return(NULL)
@@ -826,21 +870,8 @@ server <- function(input, output, session) {
       return(NULL)
     } else{
       tagList(
-        wellPanel(style = 'opacity: 0.6;background:black;color:white',
-                  datatable(
-                    v$ui,
-                    width = '800px',
-                    rownames = FALSE,
-                    colnames = c('产品名称', '价格', '匹配度', '品类', '总价'),
-                    caption = tags$caption(style = 'color: black', h2(
-                      style = 'text-align: right;color:gold', paste('Price', prettyNum(sum(v$ui$total), big.mark = ','), sep = ': ')
-                    )),
-                    options = list(dom = 't')
-                  ) %>%
-                    formatStyle('name', fontWeight = 'bold') %>%
-                    formatPercentage('match', 1) %>%
-                    formatStyle('total', color = 'gold') %>%
-                    formatStyle(colnames(v$ui), color = '#fff', backgroundColor = '#2d2d2d')
+        wellPanel(style = 'opacity: 0.6;background:black;color:white;',
+                  dataTableOutput('FavResult')
         )
       )
     }
