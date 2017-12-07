@@ -25,14 +25,15 @@ server <- function(input, output, session) {
   output$ui <- renderUI({
     if (user_input$authenticated == FALSE) {
       ##### UI code for login page
-      fluidPage(
+      fluidPage(title = 'NICE - Next-generation Interactive Context Engine',
         fluidRow(
           column(width = 2,
                  tags$img(src = 'logo_blue.jpg', width = '50%')),
           column(width =8, offset = 1,
-                 br(),br(),br(),br(),
-                 tags$span(strong(style = 'font-size:60px;color:#065AA2;', 'NICE'), span(style = 'font-size:35px;color:grey; ', ' Next-generation Interactive Context Engine'))
+                 div(style = 'height:200px',
+                 tags$p(style = 'position:relative; bottom:-100px', strong(style = 'font-size:60px;color:#065AA2;', 'NICE'), span(style = 'font-size:35px;color:grey; ', ' Next-generation Interactive Context Engine'))
                  )
+          )
         ),
         fluidRow(
           column(width = 2, offset = 5,
@@ -117,10 +118,11 @@ server <- function(input, output, session) {
                                                sliderInput(
                                                  'Range',
                                                  '预算调整幅度+/-',
-                                                 min = 0.05,
-                                                 max = 0.2,
-                                                 step = 0.05,
-                                                 value = 0.1
+                                                 min = 5,
+                                                 max = 20,
+                                                 step = 5,
+                                                 value = 10,
+                                                 post='%'
                                                )
                                         )
                                       ),
@@ -150,7 +152,7 @@ server <- function(input, output, session) {
                                         ),
                                         column(3,
                                                div(style = 'padding: 0px 0px 5px;',strong('品牌偏好')),
-                                               checkboxInput('BrandPref', '卡萨帝', FALSE)
+                                               awesomeCheckbox('BrandPref', '卡萨帝', FALSE)
                                         )
                                       ),
                                       hr(),
@@ -298,14 +300,6 @@ server <- function(input, output, session) {
     hide("ConfigPanel", anim = TRUE, time = 0.2)
     hide("TagPanel", anim = TRUE, time = 0.2)
     show('ResultPanel', anim = TRUE, time = 0.2)
-    # show('SalePanel', anim = TRUE, time = 0.2)
-    # show('FavorPanel', anim = TRUE, time = 0.2)
-    # show('sale1', anim = TRUE, time = 0.2)
-    # show('sale2', anim = TRUE, time = 0.2)
-    # show('sale3', anim = TRUE, time = 0.2)
-    # show('favor1', anim = TRUE, time = 0.2)
-    # show('favor2', anim = TRUE, time = 0.2)
-    # show('favor3', anim = TRUE, time = 0.2)
     show('Logic', anim = TRUE, time = 0.2)
     show('Bought', anim = TRUE, time = 0.2)
     show('LogicPanel', anim = TRUE, time = 0.2)
@@ -317,14 +311,6 @@ server <- function(input, output, session) {
     show("ConfigPanel", anim = TRUE, time = 0.2)
     show("TagPanel", anim = TRUE, time = 0.2)
     hide('ResultPanel', anim = TRUE, time = 0.2)
-    # hide('SalePanel', anim = TRUE, time = 0.2)
-    # hide('FavorPanel', anim = TRUE, time = 0.2)
-    # hide('sale1', anim = TRUE, time = 0.2)
-    # hide('sale2', anim = TRUE, time = 0.2)
-    # hide('sale3', anim = TRUE, time = 0.2)
-    # hide('favor1', anim = TRUE, time = 0.2)
-    # hide('favor2', anim = TRUE, time = 0.2)
-    # hide('favor3', anim = TRUE, time = 0.2)
     hide('Logic', anim = TRUE, time = 0.2)
     hide('Bought', anim = TRUE, time = 0.2)
     hide('LogicPanel', anim = TRUE, time =0.2)
@@ -393,23 +379,6 @@ server <- function(input, output, session) {
       return()
     } else{
       tagList(
-        tags$style(
-          " .irs-bar {
-          border-top-color: #fbf23d;
-          border-bottom-color: #fbf23d;
-          color:black;
-    } 
-          
-          .irs-bar-edge {
-          border-color: #fbf23d;
-          color:black;
-          }
-          
-          .irs-single, .irs-bar-edge, .irs-bar {
-          background: #fbf23d;
-          color:black;
-          }"
-        ),
         sliderInput(
           'NoFloorAir',
           '立式空调',
@@ -533,7 +502,7 @@ server <- function(input, output, session) {
   })
   
   range <- eventReactive(input$Submit, {
-    input$Range
+    input$Range/100
   })
   
   categories <- eventReactive(input$Submit, {
@@ -946,7 +915,7 @@ server <- function(input, output, session) {
   # password entry UI componenets:
   #   username and password text fields, login button
   output$uiLogin <- renderUI({
-    wellPanel(
+    wellPanel(style = 'margin: 50px 0px 0px 0px',
       textInput("user_name", "User Name:"),
       
       passwordInput("password", "Password:"),

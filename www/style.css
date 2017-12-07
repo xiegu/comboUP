@@ -16,23 +16,36 @@ body{
   padding:1px 1px 1px 5px;
 }
 
-.js-irs-0 .irs-bar {
+.irs-bar {
 border-top-color: #fbf23d;
 border-bottom-color: #fbf23d;
-color:black;
 } 
 
-.js-irs-0 .irs-bar-edge {
+.irs-bar-edge {
 border-color: #fbf23d;
-color:black;
 }
 
-.js-irs-0 .irs-single, .js-irs-0 .irs-bar-edge, .js-irs-0 .irs-bar {
+.irs-single, .irs-bar-edge, .irs-bar {
 background: #fbf23d;
 color:black;
 }
 
-.js-irs-1 .irs-bar {
+.irs-min, .irs-max {
+background:grey;
+color:white;
+}
+
+
+.irs-grid-text {
+display:none;
+}
+
+.irs-grid-pol {
+display:none;
+  
+}
+
+/*.js-irs-1 .irs-bar {
 border-top-color: #fbf23d;
 border-bottom-color: #fbf23d;
 color:black;
@@ -46,68 +59,5 @@ color:black;
 .js-irs-1 .irs-single, .js-irs-1 .irs-bar-edge, .js-irs-1 .irs-bar {
 background: #fbf23d;
 color:black;
-}
+}*/
 
-.js-irs-2 .irs-bar {
-border-top-color: #fbf23d;
-border-bottom-color: #fbf23d;
-color:black;
-} 
-
-.js-irs-2 .irs-bar-edge {
-border-color: #fbf23d;
-color:black;
-}
-
-.js-irs-2 .irs-single, .js-irs-2 .irs-bar-edge, .js-irs-2 .irs-bar {
-background: #fbf23d;
-color:black;
-}
-
-.js-irs-3 .irs-bar {
-border-top-color: #fbf23d;
-border-bottom-color: #fbf23d;
-color:black;
-} 
-
-.js-irs-3 .irs-bar-edge {
-border-color: #fbf23d;
-color:black;
-}
-
-.js-irs-3 .irs-single, .js-irs-3 .irs-bar-edge, .js-irs-3 .irs-bar {
-background: #fbf23d;
-color:black;
-}
-
-.js-irs-4 .irs-bar {
-border-top-color: #fbf23d;
-border-bottom-color: #fbf23d;
-color:black;
-} 
-
-.js-irs-4 .irs-bar-edge {
-border-color: #fbf23d;
-color:black;
-}
-
-.js-irs-4 .irs-single, .js-irs-4 .irs-bar-edge, .js-irs-4 .irs-bar {
-background: #fbf23d;
-color:black;
-}
-
-.js-irs-5 .irs-bar {
-border-top-color: #fbf23d;
-border-bottom-color: #fbf23d;
-color:black;
-} 
-
-.js-irs-5 .irs-bar-edge {
-border-color: #fbf23d;
-color:black;
-}
-
-.js-irs-5 .irs-single, .js-irs-5 .irs-bar-edge, .js-irs-5 .irs-bar {
-background: #fbf23d;
-color:black;
-}
