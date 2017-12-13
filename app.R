@@ -26,21 +26,21 @@ server <- function(input, output, session) {
     if (user_input$authenticated == FALSE) {
       ##### UI code for login page
       fluidPage(title = 'NICE - Next-generation Interactive Context Engine',
-        fluidRow(
-          column(width = 2,
-                 tags$img(src = 'logo_blue.jpg', width = '50%')),
-          column(width =8, offset = 1,
-                 div(style = 'height:200px',
-                 tags$p(style = 'position:relative; bottom:-100px', strong(style = 'font-size:60px;color:#065AA2;', 'NICE'), span(style = 'font-size:35px;color:grey; ', ' Next-generation Interactive Context Engine'))
-                 )
-          )
-        ),
-        fluidRow(
-          column(width = 2, offset = 5,
-                 uiOutput("uiLogin"),
-                 uiOutput("pass")
-          )
-        )
+                fluidRow(
+                  column(width = 2,
+                         tags$img(src = 'logo_blue.jpg', width = '50%')),
+                  column(width =8, offset = 1,
+                         div(style = 'height:200px',
+                             tags$p(style = 'position:relative; bottom:-100px', strong(style = 'font-size:60px;color:#065AA2;', 'NICE'), span(style = 'font-size:35px;color:grey; ', ' Next-generation Interactive Context Engine'))
+                         )
+                  )
+                ),
+                fluidRow(
+                  column(width = 2, offset = 5,
+                         uiOutput("uiLogin"),
+                         uiOutput("pass")
+                  )
+                )
       )
     }else{
       navbarPage(
@@ -82,7 +82,7 @@ server <- function(input, output, session) {
             column(width = 10,
                    fluidRow(
                      column(10, 
-                            wellPanel(style = 'opacity: 1;color:white;background:#065AA2',
+                            wellPanel(style = 'opacity: 1;color:white;background:rgba(6,90,162,0.1);',
                                       id = 'ConfigPanel',
                                       fluidRow(
                                         column(3,
@@ -127,13 +127,12 @@ server <- function(input, output, session) {
                                                )
                                         )
                                       ),
-                                      hr(),
                                       fluidRow(
                                         column(4,
-                                               div(style = 'padding: 0px 0px 5px 0px;',strong('家电品类'),
+                                               div(style = 'padding: 0px 0px 5px 0px;','家电品类',
                                                    #actionBttn(inputId='catWiki', size = 'xs', color = 'primary', style = 'fill', icon('question-circle-o', 'fa-lg'))
                                                    actionLink(style = 'background:rgba(20,0,0,0);border-color:#065AA2; color:white;', inputId = 'CatWiki', label = NULL, icon = icon('question-circle-o'))
-                                                   ),
+                                               ),
                                                selectizeInput(
                                                  'Combo',
                                                  NULL,
@@ -155,45 +154,20 @@ server <- function(input, output, session) {
                                                uiOutput('FloorAir')
                                         ),
                                         column(3,
-                                               div(style = 'padding: 0px 0px 5px 0px;',strong('品牌偏好')),
+                                               div(style = 'padding: 0px 0px 5px 0px;','品牌偏好'),
                                                awesomeCheckbox('BrandPref', '卡萨帝', FALSE)
                                         )
                                       ),
-                                      hr(),
                                       fluidRow(
-                                        column(2,
-                                               sliderInput(
-                                                 'People',
-                                                 '住户人数',
-                                                 min = 1,
-                                                 max = 10,
-                                                 value = 3,
-                                                 step = 1
-                                               )
+                                        column(3,
+                                               
+                                               div(style = 'padding: 0px 0px 5px 0px;','用户家庭信息'),
+                                              uiOutput('People')
+
                                         ),
                                         column(2,
-                                               selectizeInput('Old', '老人', choices = list('无' = '无',
-                                                                                          '有' = '有'),
-                                                              selected = NULL, options = list(placeholder = '家中有无老人', onInitialize = I('function() { this.setValue(""); }'))
-                                               )
-                                        ),
-                                        column(2,
-                                               selectizeInput(
-                                                 'Child',
-                                                 '小孩',
-                                                 choices = list(
-                                                   '无' = '无',
-                                                   '有，3岁以下' = '3岁以下',
-                                                   '有，3岁以上' = '3岁以上'
-                                                 ),
-                                                 selected = NULL, options = list(placeholder = '家中有无小孩', onInitialize = I('function() { this.setValue(""); }'))
-                                                 
-                                               )
-                                        )
-                                      ),
-                                      fluidRow(
-                                        column(2,
-                                               textInput('Phone', '联系电话', value = '', placeholder = '请填入联系电话')
+                                               div(style = 'padding:0px 0px 5px 0px;', '联系电话'),
+                                               textInput('Phone', NULL, value = '', placeholder = '请填入联系电话')
                                         ),
                                         column(2,
                                                selectizeInput('UserProvince', '用户地址', choices = unique(filter(china_pcr, province != 'province')$province) , selected = NULL, options = list(placeholder = '省份', onInitialize = I('function() { this.setValue(""); }')))
@@ -209,12 +183,10 @@ server <- function(input, output, session) {
                                                #checkboxInput('PM', '根据地址是否选择自清洁/净化pm2.5空调？', FALSE)
                                         )
                                       )
-                                      #####
-                                      
                             )
                      ),
                      column(2,
-                            wellPanel(style = 'opacity:1;color:white;background:#065AA2',
+                            wellPanel(style = 'opacity:1;color:white;background:rgba(6,90,162,0.1)',
                                       id= 'TagPanel',
                                       uiOutput('tagPicker')
                             )
@@ -297,7 +269,7 @@ server <- function(input, output, session) {
       )
     }
   })
-
+  
   # server-side
   observeEvent(input$Submit, {
     hide("ConfigPanel", anim = TRUE, time = 0.2)
@@ -329,7 +301,33 @@ server <- function(input, output, session) {
     ))
   })
   
-  
+  output$People <- renderUI({
+    tagList(
+    dropdown(
+      sliderInput(
+        'Resid',
+        label = '住户人数',
+        min = 1,
+        max = 10,
+        value = 3,
+        step = 1
+      ),
+      switchInput('Old', label = '老人', offLabel = '无', onLabel = '有', value = FALSE, inline = TRUE
+                  
+      ),
+      switchInput(
+        'Child',
+        '儿童',
+        offLabel = '无', onLabel = '有', value = FALSE, inline = TRUE
+        
+      ),
+      label =NULL, #paste('住户人数', input$Resid, '位', sep=''),
+      
+      status = 'info',
+      width = "100%"
+    )
+    )
+  })
   output$AddressOut <- renderUI({
     tagList(
       p(style = 'color: gold; font-size:20px', paste(input$UserProvince, input$City, input$Address, ifelse(input$UserProvince %in% c("山西省", "吉林省", "宁夏回族自治区", "北京市", "辽宁省", "黑龙江省", "新疆维吾尔自治区", "内蒙古自治区", "河北省", "青海省",          
@@ -344,11 +342,10 @@ server <- function(input, output, session) {
       p(style = 'color:gold; font-size:20px',
         paste(
           '家中',
-          input$Old,
+          ifelse(isTRUE(input$Old), '有', '无'),
           '老人，',
-          ifelse(input$Child == '无', '', '有'),
-          input$Child,
-          '小孩',
+          ifelse(isTRUE(input$Child), '有', '无'),
+          '儿童',
           ifelse(input$Old == '无' & input$Child == '无', '', '，提高安全系数比重'),
           sep = ''
         )
@@ -390,9 +387,9 @@ server <- function(input, output, session) {
           step = 1,
           value = input$Living
         )
-        )
-  }
-})
+      )
+    }
+  })
   
   output$UserCity <- renderUI({
     city <- filter(china_pcr, province == input$UserProvince) %>%.$city %>% unique %>% as.character
@@ -787,20 +784,20 @@ server <- function(input, output, session) {
     } else if (w$ui == 'Initial status') {
       return(NULL)
     }else{
-    datatable(
-      w$ui,
-      width = '800px',
-      rownames = FALSE,
-      colnames = c('产品名称', '价格', '匹配度', '品类', '总价'),
-      caption = tags$caption(style = 'color: black', h2(
-        style = 'text-align: right;color:gold', paste('Price', prettyNum(sum(w$ui$total), big.mark = ','), sep = ': ')
-      )),
-      options = list(dom = 't')
-    ) %>%
-      formatStyle('name', fontWeight = 'bold') %>%
-      formatPercentage('match', 1) %>%
-      formatStyle('total', color = 'gold') %>%
-      formatStyle(colnames(w$ui), color = '#fff', backgroundColor = '#2d2d2d')
+      datatable(
+        w$ui,
+        width = '800px',
+        rownames = FALSE,
+        colnames = c('产品名称', '价格', '匹配度', '品类', '总价'),
+        caption = tags$caption(style = 'color: black', h2(
+          style = 'text-align: right;color:gold', paste('Price', prettyNum(sum(w$ui$total), big.mark = ','), sep = ': ')
+        )),
+        options = list(dom = 't')
+      ) %>%
+        formatStyle('name', fontWeight = 'bold') %>%
+        formatPercentage('match', 1) %>%
+        formatStyle('total', color = 'gold') %>%
+        formatStyle(colnames(w$ui), color = '#fff', backgroundColor = '#2d2d2d')
     }
   })
   
@@ -843,20 +840,20 @@ server <- function(input, output, session) {
     } else if (v$ui == 'Initial status') {
       return(NULL)
     }else{
-    datatable(
-      v$ui,
-      width = '800px',
-      rownames = FALSE,
-      colnames = c('产品名称', '价格', '匹配度', '品类', '总价'),
-      caption = tags$caption(style = 'color: black', h2(
-        style = 'text-align: right;color:gold', paste('Price', prettyNum(sum(v$ui$total), big.mark = ','), sep = ': ')
-      )),
-      options = list(dom = 't')
-    ) %>%
-      formatStyle('name', fontWeight = 'bold') %>%
-      formatPercentage('match', 1) %>%
-      formatStyle('total', color = 'gold') %>%
-      formatStyle(colnames(v$ui), color = '#fff', backgroundColor = '#2d2d2d')
+      datatable(
+        v$ui,
+        width = '800px',
+        rownames = FALSE,
+        colnames = c('产品名称', '价格', '匹配度', '品类', '总价'),
+        caption = tags$caption(style = 'color: black', h2(
+          style = 'text-align: right;color:gold', paste('Price', prettyNum(sum(v$ui$total), big.mark = ','), sep = ': ')
+        )),
+        options = list(dom = 't')
+      ) %>%
+        formatStyle('name', fontWeight = 'bold') %>%
+        formatPercentage('match', 1) %>%
+        formatStyle('total', color = 'gold') %>%
+        formatStyle(colnames(v$ui), color = '#fff', backgroundColor = '#2d2d2d')
     }
   })
   
@@ -947,11 +944,11 @@ server <- function(input, output, session) {
   #   username and password text fields, login button
   output$uiLogin <- renderUI({
     wellPanel(style = 'margin: 50px 0px 0px 0px',
-      textInput("user_name", "User Name:"),
-      
-      passwordInput("password", "Password:"),
-      
-      actionButton("login_button", "Log in")
+              textInput("user_name", "User Name:"),
+              
+              passwordInput("password", "Password:"),
+              
+              actionButton("login_button", "Log in")
     )
   })
   

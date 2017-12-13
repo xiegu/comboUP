@@ -5,8 +5,8 @@ account: xiegu
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 244554
-bundleId: 1122432
+bundleId: 1122625
 url: https://xiegu.shinyapps.io/nice/
-when: 1512702975.04344
+when: 1512714149.61545
 asMultiple: FALSE
 asStatic: FALSE

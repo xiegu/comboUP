@@ -1,11 +1,14 @@
 /* custom navbar top */
 body{
   padding-top: 70px;
-  background-image: url('background.jpg');
-  background-size: cover;
-  background-repeat: no-repeat;
+  background: rgba(0,0,0,0.8) url('background.jpg')  no-repeat fixed;
+  background-size:100% auto;
+  background-blend-mode: multiply;
 }
 
+.control-label {
+  font-weight:normal;
+}
 #Phone {
   height:34px;
   padding:1px 1px 1px 5px;
@@ -19,6 +22,20 @@ body{
 .selectpicker {
   color:black;
 }
+
+.sw-dropdown button {
+  height:34px;
+  width:100%;
+  padding:1px 1px 1px 5px;
+  background: white;
+  color:black;
+  border-color:grey;
+}
+.sw-dropdown-content, .sw-dropdown-in {
+  background:#065AA2;
+  color:black;
+}
+
 .irs-bar {
 border-top-color: #fbf23d;
 border-bottom-color: #fbf23d;
