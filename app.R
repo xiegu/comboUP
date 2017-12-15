@@ -322,7 +322,6 @@ server <- function(input, output, session) {
         
       ),
       label =NULL, #paste('住户人数', input$Resid, '位', sep=''),
-      
       status = 'info',
       width = "100%"
     )
@@ -346,7 +345,7 @@ server <- function(input, output, session) {
           '老人，',
           ifelse(isTRUE(input$Child), '有', '无'),
           '儿童',
-          ifelse(input$Old == '无' & input$Child == '无', '', '，提高安全系数比重'),
+          ifelse(isTRUE(!input$Old) & isTRUE(!input$Child), '', '，提高安全系数比重'),
           sep = ''
         )
       )
