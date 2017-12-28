@@ -1,7 +1,7 @@
 /* custom navbar top */
 body{
   padding-top: 70px;
-  background: rgba(0,0,0,0.8) url('background.jpg')  no-repeat fixed;
+  background: rgba(0,0,0,0.7) url('background.jpg')  no-repeat fixed;
   background-size:100% auto;
   background-blend-mode: multiply;
 }

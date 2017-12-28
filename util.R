@@ -1,5 +1,6 @@
 library(dplyr)
 library(magrittr)
+library(XML)
 
 # login configuration
 num_fails_to_lockout <- 5
@@ -349,3 +350,7 @@ comboModelerNext <- function(cat, tabSel, ls, ro, f, b, r) {
     tableSelector = tabSel
   ))
 }
+
+# pm25 table
+pm25Table <- readHTMLTable("http://www.pm25.in/rank",  
+                      encoding = "UTF-8", stringsAsFactors = F)[[1]] %>% select(., 1:4)

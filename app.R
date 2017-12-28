@@ -217,15 +217,36 @@ server <- function(input, output, session) {
                          )
                        ),
                        useShinyjs(),
-                       hidden(actionButton('Logic', '套餐选择逻辑', class = 'btn-info')),
-                       hidden(wellPanel(style = 'opacity:0.6;background:black;color:white',
-                                        id = 'LogicPanel',
-                                        p('根据住房户型、用户预算和所需家电品类，初步筛选目标家电产品'),
-                                        p('根据用户输入基本信息，客制化精确筛选目标家电产品：'),
-                                        uiOutput('AddressOut'),
-                                        uiOutput('Member'),
-                                        uiOutput('PhoneOut')
-                       )),
+                       hidden(div(id = 'AirPanel', tabsetPanel(
+                                tabPanel(
+                                  id = 'Air',
+                                  '城市空气质量',
+                                  br(),
+                                  wellPanel(style = 'opacity: 0.6;background:black;color:white',
+                                  dataTableOutput('AirCondition')
+                                  )
+                                  )
+                                )
+                       )
+                         
+                         ),
+                       hidden(div(id = 'LogicPanel', tabsetPanel(
+                                tabPanel(
+                                  id = 'Logic',
+                                  '套餐选择逻辑',
+                                  br(),
+                                  wellPanel(style = 'opacity:0.6;background:black;color:white',
+                                            p('根据住房户型、用户预算和所需家电品类，初步筛选目标家电产品'),
+                                            p('根据用户输入基本信息，客制化精确筛选目标家电产品：'),
+                                            uiOutput('AddressOut'),
+                                            uiOutput('Member'),
+                                            uiOutput('PhoneOut')
+                                  )
+                                )  
+                       )
+                       )
+                       ),
+                       
                        hidden(actionButton('Bought', '购买记录', class = 'btn-success'))
                      ),
                      column(width = 7,
@@ -274,19 +295,19 @@ server <- function(input, output, session) {
   observeEvent(input$Submit, {
     hide("ConfigPanel", anim = TRUE, time = 0.2)
     hide("TagPanel", anim = TRUE, time = 0.2)
-    show('ResultPanel', anim = TRUE, time = 0.2)
-    show('Logic', anim = TRUE, time = 0.2)
-    show('Bought', anim = TRUE, time = 0.2)
-    show('LogicPanel', anim = TRUE, time = 0.2)
+    shinyjs::show('ResultPanel', anim = TRUE, time = 0.2)
+    shinyjs::show('AirPanel', anim = TRUE, time = 0.2)
+    shinyjs::show('Bought', anim = TRUE, time = 0.2)
+    shinyjs::show('LogicPanel', anim = TRUE, time = 0.2)
   })
   
   
   
   observeEvent(input$Reset, {
-    show("ConfigPanel", anim = TRUE, time = 0.2)
-    show("TagPanel", anim = TRUE, time = 0.2)
+    shinyjs::show("ConfigPanel", anim = TRUE, time = 0.2)
+    shinyjs::show("TagPanel", anim = TRUE, time = 0.2)
     hide('ResultPanel', anim = TRUE, time = 0.2)
-    hide('Logic', anim = TRUE, time = 0.2)
+    hide('AirPanel', anim = TRUE, time = 0.2)
     hide('Bought', anim = TRUE, time = 0.2)
     hide('LogicPanel', anim = TRUE, time =0.2)
   })
@@ -327,12 +348,46 @@ server <- function(input, output, session) {
     )
     )
   })
+  
+  output$AirCondition <- renderDataTable({
+    if(input$City == ''){
+      pmCity <- NULL
+    }else{
+      pmCity <- filter(pm25Table, grepl(strsplit(input$City, '市')[[1]][1],`城市`))
+    }
+    
+    if(is.null(pmCity)){
+      return(NULL)
+    }else if (nrow(pmCity) == 0) {
+      return(NULL)
+    }else{
+    datatable(pmCity,
+              rownames = FALSE,
+              options = list(dom = 't', ordering = FALSE)
+    ) %>%
+      formatStyle(colnames(pmCity), color = '#fff', backgroundColor = '#2d2d2d')
+    }
+  })
+  
   output$AddressOut <- renderUI({
+    if(input$City == ''){
+      pmCity <- NULL
+    }else{
+      pmCity <- filter(pm25Table, grepl(strsplit(input$City, '市')[[1]][1],`城市`))
+    }
     tagList(
-      p(style = 'color: gold; font-size:20px', paste(input$UserProvince, input$City, input$Address, ifelse(input$UserProvince %in% c("山西省", "吉林省", "宁夏回族自治区", "北京市", "辽宁省", "黑龙江省", "新疆维吾尔自治区", "内蒙古自治区", "河北省", "青海省",          
+      p(style = 'color: gold; font-size:20px', ifelse(is.null(pmCity), '未输入城市信息', paste(input$UserProvince, input$City, input$Address, ifelse(input$UserProvince %in% c("山西省", "吉林省", "宁夏回族自治区", "北京市", "辽宁省", "黑龙江省", "新疆维吾尔自治区", "内蒙古自治区", "河北省", "青海省",          
                                                                                                                                      "甘肃省", "西藏自治区", "天津市", "陕西省", "四川省", "山东省"), '，气候偏干燥，模型优先推荐带有加湿功能的产品', '，气候偏潮湿，模型优先推荐带有除湿功能的产品'), sep = '')
-      ),
-      p(style = 'color:gold; font-size:20px', paste(ifelse(input$UserProvince %in% c('河北省', '辽宁省', '吉林省', '黑龙江省'), 'pm 2.5污染指数严重，模型优先推荐自清洁功能的产品', 'pm2.5污染指数良好')))
+                                                      )
+       ),
+      p(style = 'color:gold; font-size:20px', ifelse((nrow(pmCity)==0 | is.null(pmCity)), '未查询到空气质量情况', switch(pmCity$空气质量指数类别, 
+                                                     优 = '空气质量优',
+                                                     良 = '空气质量良好',
+                                                     轻度污染 = '空气质量轻度污染，建议选择带有空气净化功能的产品',
+                                                     中度污染 = '空气质量中度污染，已推荐带有空气净化功能的产品',
+                                                     重度污染 = '空气质量重度污染，已推荐带有空气净化功能的产品',
+                                                     严重污染 = '空气质量严重污染，已推荐带有空气净化功能的产品'))
+      )
     )
   })
   
