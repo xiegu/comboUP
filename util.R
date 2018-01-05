@@ -1,6 +1,9 @@
 library(dplyr)
 library(magrittr)
 library(XML)
+#library(rdom)
+library(xml2)
+library(RSelenium)
 
 # login configuration
 num_fails_to_lockout <- 5
@@ -354,3 +357,25 @@ comboModelerNext <- function(cat, tabSel, ls, ro, f, b, r) {
 # pm25 table
 pm25Table <- readHTMLTable("http://www.pm25.in/rank",  
                       encoding = "UTF-8", stringsAsFactors = F)[[1]] %>% select(., 1:4)
+
+aqiHistory <- function(city){
+  url<-paste0("https://www.aqistudy.cn/historydata/monthdata.php?city=", city) %>% 
+    xml2::url_escape(reserved ="][!$&'()*+,;=:/?@#")
+  # remDr <- remoteDriver(remoteServerAddr = "localhost" 
+  #                       , port = 4445L
+  #                       , browserName = "phantomjs"
+  # )
+  # rD <- rsDriver(browser = 'phantomjs')
+  # remDr <- rD[['client']]
+  # remDr$open()
+  # remDr$navigate(url)
+  # content <- remDr$getPageSource()[[1]]
+  # 
+  # remDr$close()
+  # rD[['server']]$stop()
+  # 
+  #table <- XML::readHTMLTable(content, header=TRUE, stringsAsFactors = F) %>%.[[1]]
+  table <- rdom(url) %>% XML::readHTMLTable(header=TRUE, stringsAsFactors = F) %>%.[[1]]
+  table <- dplyr::mutate(table, AQI_min = sapply(table$`范围`, function(x) strsplit(x, '~')[[1]][1]), AQI_max = sapply(table$`范围`, function(x) strsplit(x, '~')[[1]][2]))
+  return(table)
+}

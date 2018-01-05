@@ -7,6 +7,10 @@ library(shinyjs)
 library(scales)
 library(markdown)
 library(digest)
+library(highcharter)
+#library(rdom)
+library(RSelenium)
+library(xml2)
 
 # Load demo data
 load('data.RData')
@@ -223,6 +227,7 @@ server <- function(input, output, session) {
                                   '城市空气质量',
                                   br(),
                                   wellPanel(style = 'opacity: 0.6;background:black;color:white',
+                                  highchartOutput('AirHistory'),
                                   dataTableOutput('AirCondition')
                                   )
                                   )
@@ -349,6 +354,68 @@ server <- function(input, output, session) {
     )
   })
   
+  airHist <- reactive({
+    if(is.null(reset$data)){
+      return(NULL)
+    }else if(input$City ==''){
+      return(NULL)
+    }else{
+      tbl <- aqiHistory(city=strsplit(input$City, '市')[[1]][1])
+      return(tbl)
+    }
+  })
+  
+  aa <- reactiveValues(table = NULL)
+  
+  output$AirHistory <- renderHighchart({
+    airCity <- aa$table
+    
+    if(is.null(airCity)){
+      return(NULL)
+    }else if (nrow(airCity) == 0) {
+      return(NULL)
+    }else{
+    highchart() %>%
+      hc_chart(type = 'line') %>%
+      hc_title(text = paste0(input$City, '空气质量指数(AQI)月变化趋势'), style = list(color = 'white')) %>%
+      hc_yAxis(
+          lineWidth = 1,
+          title = list(text = '空气质量指数(AQI)', style = list(color = 'white')),
+          labels = list(style = list(color = 'white')),
+          gridLineWidth = 0,
+          minorGridLineWidth =0,
+          plotBands =list(list(from =0, to = 50, color = '#9AFF9A', label = list(text = '优', style = list(color = 'black'))),
+                          list(from =51, to = 100, color = '#EEEE00', label = list(text = '良', style = list(color = 'black'))),
+                          list(from =101, to = 150, color = '#EEAD0E', label = list(text = '轻度污染', style = list(color = 'black'))),
+                          list(from =151, to =200, color = '#EE4000', label = list(text = '中度污染', style = list(color = 'black'))),
+                          list(from =201, to = 300, color = '#DA70D6', label = list(text = '重度污染', style = list(color = 'black'))),
+                          list(from =301, to = JS("Infinity"), color = '#473C8B', label = list(text = '严重污染', style = list(color = 'white')))
+                          )
+      ) %>%
+      hc_tooltip(pointFormat = "<span style=\"color:{series.color}\">{series.name}</span>:
+                       {point.y:,.2f}<br/>",
+                 shared = TRUE) %>%
+      hc_xAxis(categories = airCity$`月份`,
+               labels = list(style = list(color = 'white'))) %>%
+      hc_add_series(
+        data = as.numeric(airCity$AQI),
+        color = 'red',
+        name = '平均值'
+      ) %>%
+      hc_add_series(
+        data = as.numeric(airCity$AQI_min),
+        color = 'green',
+        name = '最小值'
+      ) %>%
+      hc_add_series(
+        data = as.numeric(airCity$AQI_max),
+        color = 'brown',
+        name = '最大值'
+      ) %>%
+      hc_legend(itemStyle = list(color = 'white'))
+    }
+  })
+  
   output$AirCondition <- renderDataTable({
     if(input$City == ''){
       pmCity <- NULL
@@ -363,6 +430,7 @@ server <- function(input, output, session) {
     }else{
     datatable(pmCity,
               rownames = FALSE,
+              caption = tags$caption(style = 'color: black', h4( style = 'text-align:center;color:white', paste0(input$City, '今日空气质量指数(AQI)'))),
               options = list(dom = 't', ordering = FALSE)
     ) %>%
       formatStyle(colnames(pmCity), color = '#fff', backgroundColor = '#2d2d2d')
@@ -380,13 +448,13 @@ server <- function(input, output, session) {
                                                                                                                                      "甘肃省", "西藏自治区", "天津市", "陕西省", "四川省", "山东省"), '，气候偏干燥，模型优先推荐带有加湿功能的产品', '，气候偏潮湿，模型优先推荐带有除湿功能的产品'), sep = '')
                                                       )
        ),
-      p(style = 'color:gold; font-size:20px', ifelse((nrow(pmCity)==0 | is.null(pmCity)), '未查询到空气质量情况', switch(pmCity$空气质量指数类别, 
-                                                     优 = '空气质量优',
-                                                     良 = '空气质量良好',
-                                                     轻度污染 = '空气质量轻度污染，建议选择带有空气净化功能的产品',
-                                                     中度污染 = '空气质量中度污染，已推荐带有空气净化功能的产品',
-                                                     重度污染 = '空气质量重度污染，已推荐带有空气净化功能的产品',
-                                                     严重污染 = '空气质量严重污染，已推荐带有空气净化功能的产品'))
+      p(style = 'color:gold; font-size:20px', ifelse((nrow(pmCity)==0 | is.null(pmCity)), '未查询到空气质量情况', switch(last(aa$table$`质量等级`), 
+                                                     优 = '最近一个月空气质量优',
+                                                     良 = '最近一个月空气质量良好',
+                                                     轻度污染 = '最近一个月空气质量轻度污染，建议选择带有空气净化功能的产品',
+                                                     中度污染 = '最近一个月空气质量中度污染，已推荐带有空气净化功能的产品',
+                                                     重度污染 = '最近一个月空气质量重度污染，已推荐带有空气净化功能的产品',
+                                                     严重污染 = '最近一个月空气质量严重污染，已推荐带有空气净化功能的产品'))
       )
     )
   })
@@ -802,10 +870,14 @@ server <- function(input, output, session) {
   observeEvent(input$Submit, {
     updateProgressBar(session = session, id = "pb", value = 0) # reinitialize to 0 if you run the calculation several times
     session$sendCustomMessage(type = 'launch-modal', "pb-modal") # launch the modal
+    aa$table <- airHist()
+    Sys.sleep(0.5)
+    
+    updateProgressBar(session = session, id = "pb", value = 30)
     ww$tableList <- saletable()
     Sys.sleep(0.5)
     
-    updateProgressBar(session = session, id = "pb", value = 50)
+    updateProgressBar(session = session, id = "pb", value = 60)
     
     vv$tableList <- favtable()
     Sys.sleep(0.5)
