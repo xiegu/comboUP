@@ -8,8 +8,8 @@ library(scales)
 library(markdown)
 library(digest)
 library(highcharter)
-#library(rdom)
-library(RSelenium)
+library(rdom)
+#library(RSelenium)
 library(xml2)
 
 # Load demo data
@@ -395,7 +395,7 @@ server <- function(input, output, session) {
       hc_tooltip(pointFormat = "<span style=\"color:{series.color}\">{series.name}</span>:
                        {point.y:,.2f}<br/>",
                  shared = TRUE) %>%
-      hc_xAxis(categories = airCity$`月份`,
+      hc_xAxis(categories = airCity$month,
                labels = list(style = list(color = 'white'))) %>%
       hc_add_series(
         data = as.numeric(airCity$AQI),
@@ -417,10 +417,12 @@ server <- function(input, output, session) {
   })
   
   output$AirCondition <- renderDataTable({
-    if(input$City == ''){
+    if(is.null(input$City)){
+      pmCity <- NULL
+    }else if(nchar(input$City) == 0){
       pmCity <- NULL
     }else{
-      pmCity <- filter(pm25Table, grepl(strsplit(input$City, '市')[[1]][1],`城市`))
+      pmCity <- filter(pm25Table, grepl(strsplit(input$City, '市')[[1]][1], city))
     }
     
     if(is.null(pmCity)){
@@ -430,6 +432,7 @@ server <- function(input, output, session) {
     }else{
     datatable(pmCity,
               rownames = FALSE,
+              colnames = c('排名', '城市', 'AQI', '空气质量指数类别'),
               caption = tags$caption(style = 'color: black', h4( style = 'text-align:center;color:white', paste0(input$City, '今日空气质量指数(AQI)'))),
               options = list(dom = 't', ordering = FALSE)
     ) %>%
@@ -438,17 +441,19 @@ server <- function(input, output, session) {
   })
   
   output$AddressOut <- renderUI({
-    if(input$City == ''){
+    if(is.null(input$City)){
+      pmCity <- NULL
+    }else if(nchar(input$City) == 0){
       pmCity <- NULL
     }else{
-      pmCity <- filter(pm25Table, grepl(strsplit(input$City, '市')[[1]][1],`城市`))
+      pmCity <- filter(pm25Table, grepl(strsplit(input$City, '市')[[1]][1],city))
     }
     tagList(
       p(style = 'color: gold; font-size:20px', ifelse(is.null(pmCity), '未输入城市信息', paste(input$UserProvince, input$City, input$Address, ifelse(input$UserProvince %in% c("山西省", "吉林省", "宁夏回族自治区", "北京市", "辽宁省", "黑龙江省", "新疆维吾尔自治区", "内蒙古自治区", "河北省", "青海省",          
                                                                                                                                      "甘肃省", "西藏自治区", "天津市", "陕西省", "四川省", "山东省"), '，气候偏干燥，模型优先推荐带有加湿功能的产品', '，气候偏潮湿，模型优先推荐带有除湿功能的产品'), sep = '')
                                                       )
        ),
-      p(style = 'color:gold; font-size:20px', ifelse((nrow(pmCity)==0 | is.null(pmCity)), '未查询到空气质量情况', switch(last(aa$table$`质量等级`), 
+      p(style = 'color:gold; font-size:20px', ifelse((nrow(pmCity)==0 | is.null(pmCity)), '未查询到空气质量情况', switch(last(aa$table$level), 
                                                      优 = '最近一个月空气质量优',
                                                      良 = '最近一个月空气质量良好',
                                                      轻度污染 = '最近一个月空气质量轻度污染，建议选择带有空气净化功能的产品',

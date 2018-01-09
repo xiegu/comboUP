@@ -1,9 +1,9 @@
 library(dplyr)
 library(magrittr)
 library(XML)
-#library(rdom)
+library(rdom)
 library(xml2)
-library(RSelenium)
+#library(RSelenium)
 
 # login configuration
 num_fails_to_lockout <- 5
@@ -357,6 +357,7 @@ comboModelerNext <- function(cat, tabSel, ls, ro, f, b, r) {
 # pm25 table
 pm25Table <- readHTMLTable("http://www.pm25.in/rank",  
                       encoding = "UTF-8", stringsAsFactors = F)[[1]] %>% select(., 1:4)
+colnames(pm25Table) <- c('rank', 'city', 'AQI', 'level')
 
 aqiHistory <- function(city){
   url<-paste0("https://www.aqistudy.cn/historydata/monthdata.php?city=", city) %>% 
@@ -376,6 +377,9 @@ aqiHistory <- function(city){
   # 
   #table <- XML::readHTMLTable(content, header=TRUE, stringsAsFactors = F) %>%.[[1]]
   table <- rdom(url) %>% XML::readHTMLTable(header=TRUE, stringsAsFactors = F) %>%.[[1]]
-  table <- dplyr::mutate(table, AQI_min = sapply(table$`范围`, function(x) strsplit(x, '~')[[1]][1]), AQI_max = sapply(table$`范围`, function(x) strsplit(x, '~')[[1]][2]))
+  colnames(table)[1] <- 'month'
+  colnames(table)[3] <- 'range'
+  colnames(table)[4] <- 'level'
+  table <- dplyr::mutate(table, AQI_min = sapply(table$range, function(x) strsplit(x, '~')[[1]][1]), AQI_max = sapply(table$range, function(x) strsplit(x, '~')[[1]][2]))
   return(table)
 }
