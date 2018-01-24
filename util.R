@@ -52,12 +52,12 @@ tableFilter <-
             multiAndGrep(tag, x)) / length(tag)) %>% filter(match > 0) #%>% select(-match)
         if (preference == 'sale') {
           haier_data_floor <-
-            arrange(haier_data_floor,-match,-comment_count)
+            arrange(haier_data_floor, -match, -comment_count)
           haier_data_wall <-
-            arrange(haier_data_wall,-match,-comment_count)
+            arrange(haier_data_wall, -match, -comment_count)
         } else if (preference == 'like') {
-          haier_data_floor <- arrange(haier_data_floor,-match,-score)
-          haier_data_wall <- arrange(haier_data_wall,-match,-score)
+          haier_data_floor <- arrange(haier_data_floor, -match, -score)
+          haier_data_wall <- arrange(haier_data_wall, -match, -score)
         } else{
           haier_data_floor <- haier_data_floor
           haier_data_wall <- haier_data_wall
@@ -96,9 +96,9 @@ tableFilter <-
       filter(haier_data, category == cat) %>% mutate(match = sapply(name, function(x)
         multiAndGrep(tag, x)) / length(tag)) %>% filter(match > 0) #%>% select(-match)
     if (preference == 'sale') {
-      dt <- arrange(dt,-match,-comment_count)
+      dt <- arrange(dt, -match, -comment_count)
     } else if (preference == 'like') {
-      dt <- arrange(dt,-match,-score)
+      dt <- arrange(dt, -match, -score)
     } else{
       dt <- dt
     }
@@ -145,12 +145,12 @@ comboModeler <-
           indexP2ndMax <-
             which(head(tableSelector[[indexi - 1]]$price, n) == price2ndMax)[1]
           l1[[indexi - 1]] <-
-            tableSelector[[indexi - 1]][indexP2ndMax,]
+            tableSelector[[indexi - 1]][indexP2ndMax, ]
         }
         n <-
           min(20, nrow(tableSelector[[indexi]])) # maximum 20 attempts only
         for (j in 2:n) {
-          product <- tableSelector[[i]][j,]
+          product <- tableSelector[[i]][j, ]
           l1[[i]] <- product
           table1 <- do.call(rbind, l1)
           table1 <-
@@ -183,18 +183,18 @@ comboModeler <-
         l2 <- l1
         for (i in categories) {
           indexi <- which(categories == i)
-          ts <- arrange(tableSelector[[i]],-price)
+          ts <- arrange(tableSelector[[i]], -price)
           if (indexi > 1) {
             price2ndMax <-
               sort(tableSelector[[indexi - 1]]$price, decreasing = TRUE)[2]
             indexP2ndMax <-
               which(tableSelector[[indexi - 1]]$price == price2ndMax)[1]
             l2[[indexi - 1]] <-
-              tableSelector[[indexi - 1]][indexP2ndMax,]
+              tableSelector[[indexi - 1]][indexP2ndMax, ]
           }
           n <- which(ts$price == l1[[i]]$price)[1]
           for (j in 1:n) {
-            product <- ts[j,]
+            product <- ts[j, ]
             l2[[i]] <- product
             table2 <- do.call(rbind, l2)
             table2 <-
@@ -233,12 +233,13 @@ comboModeler <-
 
 comboModelerNext <- function(cat, tabSel, ls, ro, f, b, r) {
   for (i in cat) {
-    tabSel[[i]] <- tabSel[[i]][-which(tabSel[[i]]$name == ls[[i]]$name), ]
+    tabSel[[i]] <-
+      tabSel[[i]][-which(tabSel[[i]]$name == ls[[i]]$name),]
   }
   
   li <- list()
   for (i in cat) {
-    product <- tabSel[[i]][1, ]
+    product <- tabSel[[i]][1,]
     li[[i]] <-  product
   }
   tablei <- do.call(rbind, li)
@@ -266,11 +267,11 @@ comboModelerNext <- function(cat, tabSel, ls, ro, f, b, r) {
           sort(head(tabSel[[indexi - 1]]$price, n), decreasing = TRUE)[2]
         indexP2ndMax <-
           which(head(tabSel[[indexi - 1]]$price, n) == price2ndMax)[1]
-        l1[[indexi - 1]] <- tabSel[[indexi - 1]][indexP2ndMax,]
+        l1[[indexi - 1]] <- tabSel[[indexi - 1]][indexP2ndMax, ]
       }
       n <- min(20, nrow(tabSel[[indexi]]))# maximum 20 attempts only
       for (j in 2:n) {
-        product <- tabSel[[i]][j,]
+        product <- tabSel[[i]][j, ]
         l1[[i]] <- product
         table1 <- do.call(rbind, l1)
         table1 <-
@@ -304,16 +305,17 @@ comboModelerNext <- function(cat, tabSel, ls, ro, f, b, r) {
       l2 <- l1
       for (i in cat) {
         indexi <- which(cat == i)
-        ts <- arrange(tabSel[[i]],-price)
+        ts <- arrange(tabSel[[i]], -price)
         if (indexi > 1) {
-          price2ndMax <- sort(tabSel[[indexi - 1]]$price, decreasing = TRUE)[2]
+          price2ndMax <-
+            sort(tabSel[[indexi - 1]]$price, decreasing = TRUE)[2]
           indexP2ndMax <-
             which(tabSel[[indexi - 1]]$price == price2ndMax)[1]
-          l2[[indexi - 1]] <- tabSel[[indexi - 1]][indexP2ndMax,]
+          l2[[indexi - 1]] <- tabSel[[indexi - 1]][indexP2ndMax, ]
         }
         n <- which(ts$price == l1[[i]]$price)[1]
         for (j in 1:n) {
-          product <- ts[j,]
+          product <- ts[j, ]
           l2[[i]] <- product
           table2 <- do.call(rbind, l2)
           table2 <-
@@ -355,14 +357,17 @@ comboModelerNext <- function(cat, tabSel, ls, ro, f, b, r) {
 }
 
 # pm25 table
-pm25Table <- readHTMLTable("http://www.pm25.in/rank",  
-                      encoding = "UTF-8", stringsAsFactors = F)[[1]] %>% select(., 1:4)
+pm25Table <- readHTMLTable("http://www.pm25.in/rank",
+                           encoding = "UTF-8",
+                           stringsAsFactors = F)[[1]] %>% select(., 1:4)
 colnames(pm25Table) <- c('rank', 'city', 'AQI', 'level')
 
-aqiHistory <- function(city){
-  url<-paste0("https://www.aqistudy.cn/historydata/monthdata.php?city=", city) %>% 
-    xml2::url_escape(reserved ="][!$&'()*+,;=:/?@#")
-  # remDr <- remoteDriver(remoteServerAddr = "localhost" 
+aqiHistory <- function(city) {
+  url <-
+    paste0("https://www.aqistudy.cn/historydata/monthdata.php?city=",
+           city) %>%
+    xml2::url_escape(reserved = "][!$&'()*+,;=:/?@#")
+  # remDr <- remoteDriver(remoteServerAddr = "localhost"
   #                       , port = 4445L
   #                       , browserName = "phantomjs"
   # )
@@ -371,15 +376,24 @@ aqiHistory <- function(city){
   # remDr$open()
   # remDr$navigate(url)
   # content <- remDr$getPageSource()[[1]]
-  # 
+  #
   # remDr$close()
   # rD[['server']]$stop()
-  # 
+  #
   #table <- XML::readHTMLTable(content, header=TRUE, stringsAsFactors = F) %>%.[[1]]
-  table <- rdom(url) %>% XML::readHTMLTable(header=TRUE, stringsAsFactors = F) %>%.[[1]]
+  table <-
+    rdom(url) %>% XML::readHTMLTable(header = TRUE, stringsAsFactors = F) %>%
+    .[[1]]
   colnames(table)[1] <- 'month'
   colnames(table)[3] <- 'range'
   colnames(table)[4] <- 'level'
-  table <- dplyr::mutate(table, AQI_min = sapply(table$range, function(x) strsplit(x, '~')[[1]][1]), AQI_max = sapply(table$range, function(x) strsplit(x, '~')[[1]][2]))
+  table <-
+    dplyr::mutate(
+      table,
+      AQI_min = sapply(table$range, function(x)
+        strsplit(x, '~')[[1]][1]),
+      AQI_max = sapply(table$range, function(x)
+        strsplit(x, '~')[[1]][2])
+    )
   return(table)
 }
